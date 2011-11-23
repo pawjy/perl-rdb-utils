@@ -1,0 +1,19 @@
+  {
+      main_module_name => 'DBIx::ShowSQL',
+      file_names => [qw(
+          lib/DBIx/ShowSQL.pm
+          lib/DBIx/ShowSQL.pod
+          t/dbix-showsql.t
+          config/dist/dbix-showsql.pi
+      )],
+      req_modules => {
+          'Carp' => 0,
+          'DBI' => 0,
+          'Time::HiRes' => 0,
+      },
+      t_req_modules => {
+          'Path::Class' => 0,
+          'Test::Class' => 0,
+          'Test::More' => 0,
+      },
+  };

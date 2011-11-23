@@ -1,0 +1,64 @@
+=head1 NAME
+
+DBIx::ShowSQL - Show DBI connecting and SQL executions for debugging
+
+=head1 SYNOPSIS
+
+  use DBIx::ShowSQL;
+  use DBI;
+  my $dbh = DBI->connect (...);  # 0.10 ms | dsn:...
+  my $sth = $dbh->prepare (...);
+  $sth->execute (...);           # 3.00 ms | SELECT ...
+
+=head1 DESCRIPTION
+
+Using the C<DBIx::ShowSQL>, which hooks some L<DBI> methods, any
+successful attempts to connect databases, to execute SQL statements,
+to start or end transactions via L<DBI> would be reported to the
+standard error output with their elapsed times.
+
+=head1 USAGE
+
+You just need to use the C<DBIx::ShowSQL> module to enable the
+function.  In addition, following package variables are available to
+control its behaviors:
+
+=over 4
+
+=item $DBIx::ShowSQL::WARN (boolean)
+
+If true, executed statements and elapsed times are output to the
+standard error output.  Default is true.
+
+=item $DBIx::ShowSQL::COUNT (boolean)
+
+If true, the number of the executed SQL statements are recorded.  The
+current number of the statements is accessible as
+C<$DBIx::ShowSQL::SQLCount> (default = C<0>).  Default is true.
+
+=back
+
+=head1 ACKNOWLEDGEMENTS
+
+This module is inspired by L<DBIx::MoCo>'s debugging functions and
+L<Devel::KYTProf>.
+
+=head1 HISTORY
+
+=over 4
+
+=item 1.0 (2011-11-23)
+
+First version.
+
+=back
+
+=head1 AUTHOR
+
+Wakaba <w@suika.fam.cx>.
+
+=head1 LICENSE
+
+Public Domain.
+
+=cut
