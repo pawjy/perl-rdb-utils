@@ -76,7 +76,8 @@ L<Test::mysqld>.
 =head1 AVAILABILITY
 
 The latest version of the module is available from:
-<https://github.com/wakaba/perl-rdb-utils>.
+<https://github.com/wakaba/perl-rdb-utils> or
+<http://suika.fam.cx/gate/git/wi/perl/rdb-utils.git/tree>.
 
 An outdated snapshot copy of the module might be available from
 <http://wakaba.github.com/packages/#perl-test-mysql-createdatabase>.
