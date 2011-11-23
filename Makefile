@@ -3,6 +3,7 @@ all:
 dist: always
 	mkdir -p dist
 	generate-pm-package config/dist/dbix-showsql.pi dist
+	generate-pm-package config/dist/test-mysql-createdatabase.pi dist
 
 test: safetest
 

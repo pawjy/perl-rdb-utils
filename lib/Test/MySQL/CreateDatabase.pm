@@ -1,6 +1,7 @@
 package Test::MySQL::CreateDatabase;
 use strict;
 use warnings;
+our $VERSION = '1.0';
 use Test::mysqld;
 use Test::More;
 use DBI;

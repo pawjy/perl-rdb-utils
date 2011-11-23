@@ -1,0 +1,110 @@
+=head1 NAME
+
+Test::MySQL::CreateDatabase - Prepare MySQL database for testing
+
+=head1 SYNOPSIS
+
+  use Test::MySQL::CreateDatabase qw(test_dsn);
+  my $dsn = test_dsn 'hoge';
+  
+  copy_schema_from_test_db $orig_dsn, $orig_user, $orig_pass => $dbh;
+  copy_schema_from_file $schema_f => $dbh;
+  execute_inserts_from_file $insert_f => $dbh;
+  
+  my $dbh = DBI->connect($dsn, undef, undef, {RaiseError => 1});
+  ...
+
+=head1 DESCRIPTION
+
+The C<Test::MySQL::CreateDatabase> module provides some utility
+functions for building an ad hoc database using L<Test::mysqld> and
+database schema files.
+
+=head1 FUNCTIONS
+
+The module exports no method by default.  You can export the following
+functions by specifying the function names:
+
+=over 4
+
+=item $dsn = test_dsn $db_name
+
+Creates a database whose name contains I<$db_name> as substring and
+the current database set number.  The function returns a "dsn" string
+which can be used to access to the database via the standard L<DBI>
+interface.
+
+=item reset_db_set
+
+Change the current database set number.  The current database set
+number is used to generate database name in the C<test_dsn> function.
+This function might be useful to generate multiple sets of databases
+to test multiple cases in a test script.
+
+=item $dbh = dsn2dbh $dsn
+
+Just a syntax sugar to connect to the specified dsn using L<DBI>.
+
+=item copy_schema_from_test_db $orig_dsn, $orig_username, $orig_password => $dbh
+
+Copy table schemas from the specified database.  The first three
+arguments, I<$orig_dsn>, I<$orig_username>, and I<$orig_password> is
+used to connect the original database.  The fourth argument must be
+the DBI's "dbh" object to which the schema are copied.  No rows in the
+tables are copied by this function.
+
+=item copy_schema_from_file $f => $dbh
+
+Copy table schemas from the file, which contains a sequence of SQL
+statements.  The first argument must be a L<Path::Class> object for
+the schema file.  The second argument must be the DBI's "dbh" object
+to which the schema are copied.
+
+=item execute_inserts_from_file $f => $dbh
+
+Execute SQL C<INSERT> statements from the file, which contains a
+sequence of SQL statements.  The first argument must be a
+L<Path::Class> object for the SQL file.  The second argument must be
+the DBI's "dbh" object with which the statements are executed.
+
+=back
+
+=head1 SEE ALSO
+
+L<Test::mysqld>.
+
+=head1 AVAILABILITY
+
+The latest version of the module is available from:
+<https://github.com/wakaba/perl-rdb-utils>.
+
+An outdated snapshot copy of the module might be available from
+<http://wakaba.github.com/packages/#perl-test-mysql-createdatabase>.
+
+=head1 HISTORY
+
+=over 4
+
+=item 1.0 (2011-11-23)
+
+First released version.
+
+=back
+
+=head1 ACKNOWLEDGEMENTS
+
+This module is originally created as part of Hatena Star 2010 project
+and then maintained as part of the Test-Hatena project.
+
+=head1 AUTHOR
+
+Wakaba (id:wakabatan) <wakabatan@hatena.ne.jp>.
+
+=head1 LICENSE
+
+Copyright 2010-2011 Hatena <http://www.hatena.ne.jp/>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

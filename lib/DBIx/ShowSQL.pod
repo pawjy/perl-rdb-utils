@@ -38,6 +38,14 @@ C<$DBIx::ShowSQL::SQLCount> (default = C<0>).  Default is true.
 
 =back
 
+=head1 AVAILABILITY
+
+The latest version of the module is available from:
+<https://github.com/wakaba/perl-rdb-utils>.
+
+An outdated snapshot copy of the module might be available from
+<http://wakaba.github.com/packages/#perl-dbix-showsql>.
+
 =head1 ACKNOWLEDGEMENTS
 
 This module is inspired by L<DBIx::MoCo>'s debugging functions and
