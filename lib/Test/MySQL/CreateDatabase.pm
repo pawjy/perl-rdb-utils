@@ -11,18 +11,24 @@ our @EXPORT_OK;
 
 our $DEBUG;
 
-warn "Initializing Test::mysqld...\n" if $DEBUG;
-my $mysqld = eval {
-    Test::mysqld->new(
-        mysqld => $ENV{MYSQLD} || Test::mysqld::_find_program(qw/mysqld bin libexec/),
-        mysql_install_db => $ENV{MYSQL_INSTALL_DB} || Test::mysqld::_find_program(qw/mysql_install_db bin scripts/) . ($^O eq 'darwin' ? '' : ' '),
-        my_cnf => { 'skip-networking' => '' },
-    );
-} or BAIL_OUT($Test::mysqld::errstr);
-warn "done.\n" if $DEBUG;
+my $mysqld;
+sub mysqld () {
+    return $mysqld if $mysqld;
+    
+    warn "Initializing Test::mysqld...\n" if $DEBUG;
+    $mysqld = eval {
+        Test::mysqld->new(
+            mysqld => $ENV{MYSQLD} || Test::mysqld::_find_program(qw/mysqld bin libexec/),
+            mysql_install_db => $ENV{MYSQL_INSTALL_DB} || Test::mysqld::_find_program(qw/mysql_install_db bin scripts/) . ($^O eq 'darwin' ? '' : ' '),
+            my_cnf => { 'skip-networking' => '' },
+        );
+    } or BAIL_OUT($Test::mysqld::errstr);
+    warn "done.\n" if $DEBUG;
+    return $mysqld;
+}
 
 sub test_dbh_do ($) {
-    my $dbh = DBI->connect($mysqld->dsn(dbname => 'mysql'))
+    my $dbh = DBI->connect(mysqld->dsn(dbname => 'mysql'))
         or BAIL_OUT($DBI::errstr);
     $dbh->do(shift || die) or BAIL_OUT($DBI::errstr);
 }
@@ -41,7 +47,7 @@ sub test_dsn ($) {
     my $sql = sprintf 'CREATE DATABASE `%s`', $name;
     warn "$sql\n" if $DEBUG;
     test_dbh_do $sql;
-    return $mysqld->dsn(dbname => $name);
+    return mysqld->dsn(dbname => $name);
 }
 
 push @EXPORT_OK, qw(dsn2dbh);
