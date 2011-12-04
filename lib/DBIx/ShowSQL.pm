@@ -12,9 +12,10 @@ our $COUNT = 1;
 
 our $SQLCount = 0;
 
+$Carp::CarpInternal{+__PACKAGE__} = 1;
+
 my $orig_connect = \&DBI::connect;
 *DBI::connect = sub {
-  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
   my $time = [Time::HiRes::gettimeofday];
 
   my $return = $orig_connect->(@_);
@@ -28,7 +29,6 @@ my $orig_connect = \&DBI::connect;
 my $orig_execute = \&DBI::st::execute;
 *DBI::st::execute = sub {
   #my ($sth, @binds) = @_;
-  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
   my $time = [Time::HiRes::gettimeofday];
 
   my $return = $orig_execute->(@_);
@@ -48,7 +48,6 @@ my $orig_execute = \&DBI::st::execute;
 my $orig_do = \&DBI::db::do;
 *DBI::db::do = sub {
   #my ($sth, $sql, undef, @binds) = @_;
-  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
   my $time = [Time::HiRes::gettimeofday];
 
   my $return = $orig_do->(@_);
@@ -66,7 +65,6 @@ my $orig_do = \&DBI::db::do;
 
 my $orig_begin_work = \&DBI::db::begin_work;
 *DBI::db::begin_work = sub {
-  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
   my $time = [Time::HiRes::gettimeofday];
   
   my $return = $orig_begin_work->(@_);
@@ -78,7 +76,6 @@ my $orig_begin_work = \&DBI::db::begin_work;
 
 my $orig_commit = \&DBI::db::commit;
 *DBI::db::commit = sub {
-  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
   my $time = [Time::HiRes::gettimeofday];
   
   my $return = $orig_commit->(@_);
@@ -90,7 +87,6 @@ my $orig_commit = \&DBI::db::commit;
 
 my $orig_rollback = \&DBI::db::rollback;
 *DBI::db::rollback = sub {
-  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
   my $time = [Time::HiRes::gettimeofday];
   
   my $return = $orig_rollback->(@_);
