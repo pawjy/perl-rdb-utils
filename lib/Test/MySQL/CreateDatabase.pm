@@ -12,6 +12,7 @@ our @EXPORT_OK;
 our $DEBUG;
 
 my $mysqld;
+push @EXPORT_OK, qw(mysqld);
 sub mysqld () {
     return $mysqld if $mysqld;
     
