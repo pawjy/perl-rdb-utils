@@ -49,6 +49,10 @@ sub process_preparation_file ($) {
         } elsif (/^\s*insert\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'insert', f => file($1)->absolute($base)}
+        } elsif (/^\s*import\s+glob\s+(\S+)\s*$/) {
+            for (glob file($1)->absolute($base)->stringify) {
+                process_preparation_file file($_);
+            }
         } elsif (/^\s*import\s+(\S+)\s*$/) {
             process_preparation_file file($1)->absolute($base);
         } elsif (/^\s*$/) {
