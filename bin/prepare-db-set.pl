@@ -13,8 +13,10 @@ use Test::MySQL::CreateDatabase qw(
 my $list_file_name;
 my $debug_log_file_name;
 my @operation;
+my $preparation_files = {};
 my @insert;
 my $stop;
+sub process_preparation_file ($);
 GetOptions(
     'create-database=s' => sub {
         push @operation, {type => 'create database', name => $_[1]};
@@ -25,11 +27,37 @@ GetOptions(
     'insert-file-name=s' => sub {
         push @operation, {type => 'insert', f => file($_[1])};
     },
+    'preparation-file-name=s' => sub {
+        process_preparation_file file($_[1])->absolute;
+    },
     'dsn-list=s' => \$list_file_name,
     'debug-log-file-name=s' => \$debug_log_file_name,
     'stop' => \$stop,
 ) or die;
 die unless $list_file_name;
+
+sub process_preparation_file ($) {
+    my $f = shift;
+    my $base = $f->dir;
+    for (($f->slurp)) {
+        if (/^\s*db\s+(\S+)\s*$/) {
+            push @operation,
+                {type => 'create database', name => $1};
+        } elsif (/^\s*table\s+(\S+)\s*$/) {
+            push @operation,
+                {type => 'create table', f => file($1)->absolute($base)};
+        } elsif (/^\s*insert\s+(\S+)\s*$/) {
+            push @operation,
+                {type => 'insert', f => file($1)->absolute($base)}
+        } elsif (/^\s*import\s+(\S+)\s*$/) {
+            process_preparation_file file($1)->absolute($base);
+        } elsif (/^\s*$/) {
+            #
+        } else {
+            die "Syntax error: |$_|\n";
+        }
+    }
+}
 
 my $debug_log_file;
 my $debug_log_f;
@@ -89,11 +117,11 @@ for my $op (@operation) {
     } elsif ($op->{type} eq 'create table') {
         die "Database is not created before CREATE TABLE" unless $last_dbh;
         copy_schema_from_file $op->{f} => $last_dbh;
-        warn "Load CREATE TABLEs from $op->{f}\n";
+        warn "Load CREATE TABLEs from @{[$op->{f}->relative]}\n";
     } elsif ($op->{type} eq 'insert') {
         die "Database is not created before INSERT" unless $last_dbh;
         execute_inserts_from_file $op->{f} => $last_dbh;
-        warn "Load INSERTs from $op->{f}\n";
+        warn "Load INSERTs from @{[$op->{f}->relative]}\n";
     }
 }
 
