@@ -21,6 +21,9 @@ GetOptions(
     'create-database=s' => sub {
         push @operation, {type => 'create database', name => $_[1]};
     },
+    'use-database=s' => sub {
+        push @operation, {type => 'use database', name => $_[1]};
+    },
     'create-table-file-name=s' => sub {
         push @operation, {type => 'create table', f => file($_[1])};
     },
@@ -43,6 +46,9 @@ sub process_preparation_file ($) {
         if (/^\s*db\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'create database', name => $1};
+        } elsif (/^\s*use\s+db\s+(\S+)\s*$/) {
+            push @operation,
+                {type => 'use database', name => $1};
         } elsif (/^\s*table\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'create table', f => file($1)->absolute($base)};
@@ -112,12 +118,17 @@ local $ENV{TEST_MYSQLD_PRESERVE} = 1;
 
 my $last_dbh;
 my $dsns = {};
+my $dbhs = {};
 for my $op (@operation) {
     if ($op->{type} eq 'create database') {
         my $dsn = test_dsn $op->{name};
         $last_dbh = dsn2dbh $dsn;
         $dsns->{$op->{name}} = $dsn;
+        $dbhs->{$op->{name}} = $last_dbh;
         warn "CREATE DATABASE $op->{name}\n";
+    } elsif ($op->{type} eq 'use database') {
+        $last_dbh = $dbhs->{$op->{name}};
+        warn "USE $op->{name}\n";
     } elsif ($op->{type} eq 'create table') {
         die "Database is not created before CREATE TABLE" unless $last_dbh;
         copy_schema_from_file $op->{f} => $last_dbh;
