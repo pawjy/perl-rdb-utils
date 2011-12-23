@@ -7,8 +7,10 @@ use Carp;
 use Time::HiRes;
 use DBI;
 
-our $WARN = 1;
-our $COUNT = 1;
+our $WARN;
+$WARN = 1 unless defined $WARN;
+our $COUNT;
+$COUNT = 1 unless defined $COUNT;
 
 our $SQLCount = 0;
 
@@ -21,8 +23,7 @@ my $orig_connect = \&DBI::connect;
   my $return = $orig_connect->(@_);
 
   my $tv = Time::HiRes::tv_interval ($time);
-  carp sprintf '%.2f ms | %s',
-      $tv * 1000, $_[1];
+  carp sprintf '%.2f ms | %s', $tv * 1000, $_[1] if $WARN;
   return $return;
 }; # DBI::connect
 
