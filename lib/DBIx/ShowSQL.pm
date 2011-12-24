@@ -8,11 +8,19 @@ use Time::HiRes;
 use DBI;
 
 our $WARN;
-$WARN = 1 unless defined $WARN;
 our $COUNT;
-$COUNT = 1 unless defined $COUNT;
 
-our $SQLCount = 0;
+if ($ENV{SQL_DEBUG}) {
+  $WARN = 1;
+  $COUNT = 1;
+}
+
+sub import {
+  $WARN = 1 unless defined $WARN;
+  $COUNT = 1 unless defined $COUNT;
+} # import
+
+our $SQLCount ||= 0;
 
 $Carp::CarpInternal{+__PACKAGE__} = 1;
 
