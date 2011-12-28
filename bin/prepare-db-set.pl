@@ -31,7 +31,7 @@ GetOptions(
         push @operation, {type => 'insert', f => file($_[1])};
     },
     'preparation-file-name=s' => sub {
-        process_preparation_file file($_[1])->absolute;
+        process_preparation_file file($_[1])->absolute->realpath;
     },
     'dsn-list=s' => \$list_file_name,
     'debug-log-file-name=s' => \$debug_log_file_name,
@@ -39,8 +39,20 @@ GetOptions(
 ) or die;
 die unless $list_file_name;
 
+use Cwd qw(abs_path);
+sub Path::Class::Entity::realpath {
+    my $self = shift;
+    my $cleaned = $self->new(abs_path $self);
+    %$self = %$cleaned;
+    return $self;
+}
+
+my $ProcessedFileNames = {};
 sub process_preparation_file ($) {
     my $f = shift;
+    return if $ProcessedFileNames->{$f->stringify};
+    $ProcessedFileNames->{$f->stringify} = 1;
+
     my $base = $f->dir;
     for (($f->slurp)) {
         if (/^\s*db\s+(\S+)\s*$/) {
@@ -51,16 +63,16 @@ sub process_preparation_file ($) {
                 {type => 'use database', name => $1};
         } elsif (/^\s*table\s+(\S+)\s*$/) {
             push @operation,
-                {type => 'create table', f => file($1)->absolute($base)};
+                {type => 'create table', f => file($1)->absolute($base)->realpath};
         } elsif (/^\s*insert\s+(\S+)\s*$/) {
             push @operation,
-                {type => 'insert', f => file($1)->absolute($base)}
+                {type => 'insert', f => file($1)->absolute($base)->realpath}
         } elsif (/^\s*import\s+glob\s+(\S+)\s*$/) {
             for (glob file($1)->absolute($base)->stringify) {
-                process_preparation_file file($_);
+                process_preparation_file file($_)->realpath;
             }
         } elsif (/^\s*import\s+(\S+)\s*$/) {
-            process_preparation_file file($1)->absolute($base);
+            process_preparation_file file($1)->absolute($base)->realpath;
         } elsif (/^\s*$/) {
             #
         } else {
@@ -85,12 +97,12 @@ sub debuglog (@) {
 }
 
 if ($debug_log_file_name) {
-    $debug_log_f = file($debug_log_file_name)->absolute;
+    $debug_log_f = file($debug_log_file_name)->absolute->realpath;
     initdebug;
 }
 
 my $json = {};
-my $list_f = file($list_file_name)->absolute;
+my $list_f = file($list_file_name)->absolute->realpath;
 if (-f $list_f) {
     $json = file2perl $list_f;
     debuglog 'File opened', $list_file_name;
