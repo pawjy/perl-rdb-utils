@@ -7,7 +7,7 @@ use Carp;
 
 for my $cmd_name (
   qw(exec attr begin_work commit rollback func), # AnyEvent::DBI
-  qw(exec_as_hashref),                           # AnyEvent::DBI::Hashref
+  qw(exec_as_hashref exec_or_fatal_as_hashref),  # AnyEvent::DBI::Hashref
 ) {
   eval 'sub ' . $cmd_name . '{
     my $cb = pop;
