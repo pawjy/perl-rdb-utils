@@ -1,0 +1,22 @@
+  {
+      main_module_name => 'AnyEvent::DBI::Hashref',
+      file_names => [qw(
+          lib/AnyEvent/DBI/Hashref.pm
+          lib/AnyEvent/DBI/Hashref.pod
+          lib/AnyEvent/DBI/Carp.pm
+          lib/AnyEvent/DBI/Carp.pod
+          t/anyevent-dbi-hashref.t
+          t/anyevent-dbi-carp.t
+          config/dist/anyevent-dbi-hashref.pi
+      )],
+      req_modules => {
+          'Carp' => 0,
+          'AnyEvent::DBI' => 0,
+      },
+      t_req_modules => {
+          'Path::Class' => 0,
+          'Test::Class' => 0,
+          'Test::More' => 0,
+          'Test::MySQL::CreateDatabase' => 0,
+      },
+  };
