@@ -19,7 +19,7 @@ sub mysqld () {
     warn "Initializing Test::mysqld...\n" if $DEBUG;
     $mysqld = eval {
         Test::mysqld->new(
-            mysqld => $ENV{MYSQLD} || Test::mysqld::_find_program(qw/mysqld bin libexec/),
+            mysqld => $ENV{MYSQLD} || Test::mysqld::_find_program(qw/mysqld bin libexec sbin/),
             mysql_install_db => $ENV{MYSQL_INSTALL_DB} || Test::mysqld::_find_program(qw/mysql_install_db bin scripts/) . ($^O eq 'darwin' ? '' : ' '),
             my_cnf => { 'skip-networking' => '' },
         );
