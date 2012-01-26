@@ -8,6 +8,7 @@ use Getopt::Long;
 use JSON::Functions::XS qw(file2perl perl2json_bytes);
 use Test::MySQL::CreateDatabase qw(
     mysqld test_dsn dsn2dbh copy_schema_from_file execute_inserts_from_file
+    extract_schema_sql_from_file
 );
 
 my $list_file_name;
@@ -64,6 +65,9 @@ sub process_preparation_file ($) {
         } elsif (/^\s*table\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'create table', f => file($1)->absolute($base)->realpath};
+        } elsif (/^\s*dbtable\s+(\S+)\s*$/) {
+            push @operation,
+                {type => 'create db and table', f => file($1)->absolute($base)->realpath};
         } elsif (/^\s*insert\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'insert', f => file($1)->absolute($base)->realpath}
@@ -131,7 +135,7 @@ local $ENV{TEST_MYSQLD_PRESERVE} = 1;
 my $last_dbh;
 my $dsns = {};
 my $dbhs = {};
-for my $op (@operation) {
+while (my $op = shift @operation) {
     if ($op->{type} eq 'create database') {
         my $dsn = test_dsn $op->{name};
         $last_dbh = dsn2dbh $dsn;
@@ -141,6 +145,21 @@ for my $op (@operation) {
     } elsif ($op->{type} eq 'use database') {
         $last_dbh = $dbhs->{$op->{name}};
         warn "USE $op->{name}\n";
+    } elsif ($op->{type} eq 'create db and table') {
+        my $subops = extract_schema_sql_from_file $op->{f};
+        warn "Load CREATEs from @{[$op->{f}->relative]}\n";
+        my @newop;
+        for (@$subops) {
+            if (/^CREATE DATABASE (?:IF NOT EXISTS )?(\S+)$/) {
+                push @newop, {type => 'create database', name => $1};
+                push @newop, {type => 'use database', name => $1};
+            } elsif (/^CREATE TABLE / or /^INSERT /) {
+                push @newop, {type => 'sql', value => $_};
+            } else {
+                die "Operation |$_| is not supported\n";
+            }
+        }
+        unshift @operation, @newop;
     } elsif ($op->{type} eq 'create table') {
         die "Database is not created before CREATE TABLE" unless $last_dbh;
         copy_schema_from_file $op->{f} => $last_dbh;
@@ -149,6 +168,13 @@ for my $op (@operation) {
         die "Database is not created before INSERT" unless $last_dbh;
         execute_inserts_from_file $op->{f} => $last_dbh;
         warn "Load INSERTs from @{[$op->{f}->relative]}\n";
+    } elsif ($op->{type} eq 'sql') {
+        die "Database is not created before SQL execution" unless $last_dbh;
+        $last_dbh->prepare($op->{value})->execute;
+        my $v = substr $op->{value}, 0, 50;
+        $v .= '...' if $v ne $op->{value};
+        $v =~ s/\x0A/ /g;
+        warn "SQL: $v\n";
     }
 }
 

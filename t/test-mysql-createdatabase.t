@@ -9,7 +9,7 @@ BEGIN { $Test::MySQL::CreateDatabase::DEBUG = 1 if $ENV{MOCO_DEBUG} };
 
 use Test::MySQL::CreateDatabase qw(
     reset_db_set test_dsn dsn2dbh copy_schema_from_file
-    execute_inserts_from_file
+    execute_inserts_from_file extract_schema_sql_from_file
 );
 use Test::MoreMore;
 
@@ -23,6 +23,19 @@ sub _copy_schema_from_file : Test(3) {
     ok $dbh->do('SHOW CREATE TABLE hoge1');
     ok $dbh->do('SHOW CREATE TABLE hoge2');
     ng $dbh->do('SHOW CREATE TABLE hoge3');
+}
+
+sub _extract_schema_sql_from_file : Test(1) {
+    my $f = file(__FILE__)->dir->subdir('data')->file('mysql-createdatabase-schema2.sql');
+    my $result = extract_schema_sql_from_file $f;
+    eq_or_diff $result, [
+        'CREATE DATABASE hoge',
+        qq"CREATE TABLE foo (\n  bar int, baz int\n)",
+        'INSERT INTO foo (bar, baz) VALUES (1, 4)',
+        'CREATE DATABASE hoge',
+        qq"CREATE TABLE foo (\n  bar int, baz int\n)",
+        'INSERT INTO foo (bar, baz) VALUES (1, 4)',
+    ];
 }
 
 sub _execute_inserts_from_file : Test(2) {
