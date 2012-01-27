@@ -56,6 +56,7 @@ sub process_preparation_file ($) {
 
     my $base = $f->dir;
     for (($f->slurp)) {
+        s/#.*$//;
         if (/^\s*db\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'create database', name => $1};
