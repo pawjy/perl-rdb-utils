@@ -16,6 +16,7 @@ my $debug_log_file_name;
 my @operation;
 my $preparation_files = {};
 my @insert;
+my @modules_d;
 my $stop;
 sub process_preparation_file ($);
 GetOptions(
@@ -36,6 +37,9 @@ GetOptions(
     },
     'dsn-list=s' => \$list_file_name,
     'debug-log-file-name=s' => \$debug_log_file_name,
+    'modules-dir-name=s' => sub {
+        push @modules_d, dir($_[1])->absolute->realpath;
+    },
     'stop' => \$stop,
 ) or die;
 die unless $list_file_name;
@@ -43,7 +47,7 @@ die unless $list_file_name;
 use Cwd qw(abs_path);
 sub Path::Class::Entity::realpath {
     my $self = shift;
-    my $cleaned = $self->new(abs_path $self);
+    my $cleaned = $self->new((abs_path $self) || $self);
     %$self = %$cleaned;
     return $self;
 }
@@ -74,6 +78,10 @@ sub process_preparation_file ($) {
                 {type => 'insert', f => file($1)->absolute($base)->realpath}
         } elsif (/^\s*import\s+glob\s+(\S+)\s*$/) {
             for (glob file($1)->absolute($base)->stringify) {
+                process_preparation_file file($_)->realpath;
+            }
+        } elsif (/^\s*import\s+modules\s+(\S+)\s*$/) {
+            for (map { glob $_->file($1)->stringify } @modules_d) {
                 process_preparation_file file($_)->realpath;
             }
         } elsif (/^\s*import\s+(\S+)\s*$/) {
