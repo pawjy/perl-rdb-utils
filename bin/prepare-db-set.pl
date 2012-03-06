@@ -73,6 +73,10 @@ sub process_preparation_file ($) {
         } elsif (/^\s*dbtable\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'create db and table', f => file($1)->absolute($base)->realpath};
+        } elsif (/^\s*alter\s+table\s+(\S+)\s*$/) {
+            push @operation,
+                {type => 'alter table',
+                 f => file($1)->absolute($base)->realpath}
         } elsif (/^\s*insert\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'insert', f => file($1)->absolute($base)->realpath}
@@ -177,6 +181,10 @@ while (my $op = shift @operation) {
         die "Database is not created before INSERT" unless $last_dbh;
         execute_inserts_from_file $op->{f} => $last_dbh;
         warn "Load INSERTs from @{[$op->{f}->relative]}\n";
+    } elsif ($op->{type} eq 'alter table') {
+        die "Database is not created before ALTER TABLE" unless $last_dbh;
+        execute_alter_tables_from_file $op->{f} => $last_dbh;
+        warn "Load ALTER TABLEs from @{[$op->{f}->relative]}\n";
     } elsif ($op->{type} eq 'sql') {
         die "Database is not created before SQL execution" unless $last_dbh;
         $last_dbh->prepare($op->{value})->execute;

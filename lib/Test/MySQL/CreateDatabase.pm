@@ -96,7 +96,7 @@ sub extract_schema_sql_from_file ($) {
     my @result;
     my $schema = $f->slurp;
     $schema =~ s/-- .*$//m;
-    while ($schema =~ /\b((?:CREATE (?:TABLE|DATABASE)|INSERT).*?);/sgi) {
+    while ($schema =~ /\b((?:CREATE (?:TABLE|DATABASE)|INSERT|ALTER TABLE).*?);/sgi) {
         push @result, $1;
     }
     return \@result;
@@ -107,6 +107,18 @@ sub execute_inserts_from_file ($$) {
     my ($f, $new_dbh) = @_;
     my $schema = $f->slurp;
     while ($schema =~ /\b(INSERT.*?);/sgi) {
+        my $sql = $1;
+        warn "$sql\n" if $DEBUG;
+        my $sth = $new_dbh->prepare($sql);
+        $sth->execute;
+    }
+}
+
+push @EXPORT_OK, qw(execute_alter_tables_from_file);
+sub execute_alter_tables_from_file ($$) {
+    my ($f, $new_dbh) = @_;
+    my $schema = $f->slurp;
+    while ($schema =~ /\b(ALTER TABLE.*?);/sgi) {
         my $sql = $1;
         warn "$sql\n" if $DEBUG;
         my $sth = $new_dbh->prepare($sql);

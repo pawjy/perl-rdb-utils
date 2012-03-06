@@ -12,3 +12,6 @@ CREATE TABLE foo (
 );
 INSERT INTO foo (bar, baz) VALUES (1, 4);
 -- CREATE TABLE foo;
+
+ALTER TABLE foo ADD COLUMN abc int
+ADD COLUMN xyz TINYINT;
