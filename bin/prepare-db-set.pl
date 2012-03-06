@@ -8,7 +8,7 @@ use Getopt::Long;
 use JSON::Functions::XS qw(file2perl perl2json_bytes);
 use Test::MySQL::CreateDatabase qw(
     mysqld test_dsn dsn2dbh copy_schema_from_file execute_inserts_from_file
-    extract_schema_sql_from_file
+    extract_schema_sql_from_file execute_alter_tables_from_file
 );
 
 my $list_file_name;
