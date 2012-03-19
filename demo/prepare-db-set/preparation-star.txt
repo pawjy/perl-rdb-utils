@@ -1,0 +1,9 @@
+import glob modules/*/db/preparation.txt
+
+db star_main
+table star_main.sql
+
+dbtable stars_n.sql
+
+db star_user
+table star_user.sql

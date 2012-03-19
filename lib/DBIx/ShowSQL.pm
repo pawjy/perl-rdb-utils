@@ -9,6 +9,7 @@ use DBI;
 
 our $WARN;
 our $COUNT;
+our $EscapeMethod ||= 'perl';
 
 if ($ENV{SQL_DEBUG}) {
   $WARN = 1;
@@ -19,6 +20,16 @@ sub import {
   $WARN = 1 unless defined $WARN;
   $COUNT = 1 unless defined $COUNT;
 } # import
+
+sub _escape ($) {
+    if ($EscapeMethod eq 'perl') {
+        my $v = $_[0];
+        $v =~ s/([^\x20-\x5B\x5D-\x7E])/ord $1 > 0xFF ? sprintf '\x{%04X}', ord $1 : sprintf '\x%02X', ord $1/ge;
+        return $v;
+    } else { # asis
+        return $_[0];
+    }
+}
 
 our $SQLCount ||= 0;
 
@@ -45,7 +56,7 @@ my $orig_execute = \&DBI::st::execute;
   my $tv = Time::HiRes::tv_interval ($time);
   my $sql = $_[0]->{Database}->{Statement};
   my $bind = @_ > 1
-      ? ' (' . join (', ', map { defined $_ ? $_ : '(undef)' } @_[1..$#_]) . ')'
+      ? ' (' . join (', ', map { defined $_ ? _escape $_ : '(undef)' } @_[1..$#_]) . ')'
       : '';
 
   $SQLCount++ if $COUNT;
@@ -63,7 +74,7 @@ my $orig_do = \&DBI::db::do;
 
   my $tv = Time::HiRes::tv_interval ($time);
   my $bind = @_ > 3
-      ? ' (' . join (', ', map { defined $_ ? $_ : '(undef)' } @_[3..$#_]) . ')'
+      ? ' (' . join (', ', map { defined $_ ? _escape $_ : '(undef)' } @_[3..$#_]) . ')'
       : '';
 
   $SQLCount++ if $COUNT;

@@ -19,12 +19,9 @@ sub mysqld () {
     warn "Initializing Test::mysqld...\n" if $DEBUG;
     $mysqld = eval {
         Test::mysqld->new(
-            mysqld => $ENV{MYSQLD} || Test::mysqld::_find_program(qw/mysqld bin libexec/),
+            mysqld => $ENV{MYSQLD} || Test::mysqld::_find_program(qw/mysqld bin libexec sbin/),
             mysql_install_db => $ENV{MYSQL_INSTALL_DB} || Test::mysqld::_find_program(qw/mysql_install_db bin scripts/) . ($^O eq 'darwin' ? '' : ' '),
-            my_cnf => {
-                'skip-networking' => '',
-                'innodb_lock_wait_timeout' => 2,
-            },
+            my_cnf => { 'skip-networking' => '' },
         );
     } or BAIL_OUT($Test::mysqld::errstr);
     warn "done.\n" if $DEBUG;
@@ -73,7 +70,7 @@ sub copy_schema_from_test_db ($$$$) {
     warn $command, "\n" if $DEBUG;
     my $schema = `$command`;
 
-    while ($schema =~ /\b(CREATE TABLE.*?);/sg) {
+    while ($schema =~ /\b(CREATE TABLE.*?);/sgi) {
         my $sql = $1;
         warn "$sql\n" if $DEBUG;
         my $sth = $new_dbh->prepare($sql);
@@ -85,7 +82,7 @@ push @EXPORT_OK, qw(copy_schema_from_file);
 sub copy_schema_from_file ($$) {
     my ($f, $new_dbh) = @_;
     my $schema = $f->slurp;
-    while ($schema =~ /\b(CREATE TABLE.*?);/sg) {
+    while ($schema =~ /\b(CREATE TABLE.*?);/sgi) {
         my $sql = $1;
         warn "$sql\n" if $DEBUG;
         my $sth = $new_dbh->prepare($sql);
@@ -93,11 +90,35 @@ sub copy_schema_from_file ($$) {
     }
 }
 
+push @EXPORT_OK, qw(extract_schema_sql_from_file);
+sub extract_schema_sql_from_file ($) {
+    my ($f) = @_;
+    my @result;
+    my $schema = $f->slurp;
+    $schema =~ s/-- .*$//m;
+    while ($schema =~ /\b((?:CREATE (?:TABLE|DATABASE)|INSERT|ALTER TABLE).*?);/sgi) {
+        push @result, $1;
+    }
+    return \@result;
+}
+
 push @EXPORT_OK, qw(execute_inserts_from_file);
 sub execute_inserts_from_file ($$) {
     my ($f, $new_dbh) = @_;
     my $schema = $f->slurp;
-    while ($schema =~ /\b(INSERT.*?);/sg) {
+    while ($schema =~ /\b(INSERT.*?);/sgi) {
+        my $sql = $1;
+        warn "$sql\n" if $DEBUG;
+        my $sth = $new_dbh->prepare($sql);
+        $sth->execute;
+    }
+}
+
+push @EXPORT_OK, qw(execute_alter_tables_from_file);
+sub execute_alter_tables_from_file ($$) {
+    my ($f, $new_dbh) = @_;
+    my $schema = $f->slurp;
+    while ($schema =~ /\b(ALTER TABLE.*?);/sgi) {
         my $sql = $1;
         warn "$sql\n" if $DEBUG;
         my $sth = $new_dbh->prepare($sql);

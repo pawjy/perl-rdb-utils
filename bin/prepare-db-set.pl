@@ -8,6 +8,7 @@ use Getopt::Long;
 use JSON::Functions::XS qw(file2perl perl2json_bytes);
 use Test::MySQL::CreateDatabase qw(
     mysqld test_dsn dsn2dbh copy_schema_from_file execute_inserts_from_file
+    extract_schema_sql_from_file execute_alter_tables_from_file
 );
 
 my $list_file_name;
@@ -15,6 +16,7 @@ my $debug_log_file_name;
 my @operation;
 my $preparation_files = {};
 my @insert;
+my @modules_d;
 my $stop;
 sub process_preparation_file ($);
 GetOptions(
@@ -35,6 +37,9 @@ GetOptions(
     },
     'dsn-list=s' => \$list_file_name,
     'debug-log-file-name=s' => \$debug_log_file_name,
+    'modules-dir-name=s' => sub {
+        push @modules_d, dir($_[1])->absolute->realpath;
+    },
     'stop' => \$stop,
 ) or die;
 die unless $list_file_name;
@@ -42,7 +47,7 @@ die unless $list_file_name;
 use Cwd qw(abs_path);
 sub Path::Class::Entity::realpath {
     my $self = shift;
-    my $cleaned = $self->new(abs_path $self);
+    my $cleaned = $self->new((abs_path $self) || $self);
     %$self = %$cleaned;
     return $self;
 }
@@ -55,6 +60,7 @@ sub process_preparation_file ($) {
 
     my $base = $f->dir;
     for (($f->slurp)) {
+        s/#.*$//;
         if (/^\s*db\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'create database', name => $1};
@@ -64,11 +70,22 @@ sub process_preparation_file ($) {
         } elsif (/^\s*table\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'create table', f => file($1)->absolute($base)->realpath};
+        } elsif (/^\s*dbtable\s+(\S+)\s*$/) {
+            push @operation,
+                {type => 'create db and table', f => file($1)->absolute($base)->realpath};
+        } elsif (/^\s*alter\s+table\s+(\S+)\s*$/) {
+            push @operation,
+                {type => 'alter table',
+                 f => file($1)->absolute($base)->realpath}
         } elsif (/^\s*insert\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'insert', f => file($1)->absolute($base)->realpath}
         } elsif (/^\s*import\s+glob\s+(\S+)\s*$/) {
             for (glob file($1)->absolute($base)->stringify) {
+                process_preparation_file file($_)->realpath;
+            }
+        } elsif (/^\s*import\s+modules\s+(\S+)\s*$/) {
+            for (map { glob $_->file($1)->stringify } @modules_d) {
                 process_preparation_file file($_)->realpath;
             }
         } elsif (/^\s*import\s+(\S+)\s*$/) {
@@ -131,7 +148,7 @@ local $ENV{TEST_MYSQLD_PRESERVE} = 1;
 my $last_dbh;
 my $dsns = {};
 my $dbhs = {};
-for my $op (@operation) {
+while (my $op = shift @operation) {
     if ($op->{type} eq 'create database') {
         my $dsn = test_dsn $op->{name};
         $last_dbh = dsn2dbh $dsn;
@@ -141,6 +158,21 @@ for my $op (@operation) {
     } elsif ($op->{type} eq 'use database') {
         $last_dbh = $dbhs->{$op->{name}};
         warn "USE $op->{name}\n";
+    } elsif ($op->{type} eq 'create db and table') {
+        my $subops = extract_schema_sql_from_file $op->{f};
+        warn "Load CREATEs from @{[$op->{f}->relative]}\n";
+        my @newop;
+        for (@$subops) {
+            if (/^CREATE DATABASE (?:IF NOT EXISTS )?(\S+)$/) {
+                push @newop, {type => 'create database', name => $1};
+                push @newop, {type => 'use database', name => $1};
+            } elsif (/^CREATE TABLE / or /^INSERT /) {
+                push @newop, {type => 'sql', value => $_};
+            } else {
+                die "Operation |$_| is not supported\n";
+            }
+        }
+        unshift @operation, @newop;
     } elsif ($op->{type} eq 'create table') {
         die "Database is not created before CREATE TABLE" unless $last_dbh;
         copy_schema_from_file $op->{f} => $last_dbh;
@@ -149,6 +181,17 @@ for my $op (@operation) {
         die "Database is not created before INSERT" unless $last_dbh;
         execute_inserts_from_file $op->{f} => $last_dbh;
         warn "Load INSERTs from @{[$op->{f}->relative]}\n";
+    } elsif ($op->{type} eq 'alter table') {
+        die "Database is not created before ALTER TABLE" unless $last_dbh;
+        execute_alter_tables_from_file $op->{f} => $last_dbh;
+        warn "Load ALTER TABLEs from @{[$op->{f}->relative]}\n";
+    } elsif ($op->{type} eq 'sql') {
+        die "Database is not created before SQL execution" unless $last_dbh;
+        $last_dbh->prepare($op->{value})->execute;
+        my $v = substr $op->{value}, 0, 50;
+        $v .= '...' if $v ne $op->{value};
+        $v =~ s/\x0A/ /g;
+        warn "SQL: $v\n";
     }
 }
 
