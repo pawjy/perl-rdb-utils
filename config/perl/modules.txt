@@ -1,0 +1,12 @@
+AnyEvent::DBI
+Carp
+Cwd
+DBI
+DBIx::RewriteDSN
+Exporter::Lite
+Getopt::Long
+Path::Class
+Test::Class
+Test::More
+Test::mysqld
+Time::HiRes
