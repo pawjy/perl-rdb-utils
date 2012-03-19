@@ -10,3 +10,5 @@ Test::Class
 Test::More
 Test::mysqld
 Time::HiRes
+
+Event
