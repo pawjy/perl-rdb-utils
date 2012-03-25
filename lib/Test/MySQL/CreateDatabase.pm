@@ -26,7 +26,7 @@ sub mysqld () {
                 'innodb_lock_wait_timeout' => 2,
             },
         );
-    } or BAIL_OUT($Test::mysqld::errstr);
+    } or BAIL_OUT($Test::mysqld::errstr || $@);
     warn "done.\n" if $DEBUG;
     return $mysqld;
 }
