@@ -24,7 +24,9 @@ sub import {
 sub _escape ($) {
     if ($EscapeMethod eq 'perl') {
         my $v = $_[0];
-        $v =~ s/([^\x20-\x5B\x5D-\x7E])/ord $1 > 0xFF ? sprintf '\x{%04X}', ord $1 : sprintf '\x%02X', ord $1/ge;
+        eval {
+          $v =~ s/([^\x20-\x5B\x5D-\x7E])/ord $1 > 0xFF ? sprintf '\x{%04X}', ord $1 : sprintf '\x%02X', ord $1/ge;
+        }; # for old buggy version of Perl ("Malformed UTF-8" fatal warning)
         return $v;
     } else { # asis
         return $_[0];
