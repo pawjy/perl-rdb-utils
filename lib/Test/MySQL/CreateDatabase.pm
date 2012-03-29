@@ -76,7 +76,8 @@ sub copy_schema_from_test_db ($$$$) {
     my $sth_tables = $old_dbh->prepare('SHOW TABLES');
     $sth_tables->execute;
     while (my $row_table = $sth_tables->fetch) {
-        my $sth_create = $old_dbh->prepare("SHOW CREATE TABLE $row_table->[0]");
+        my $table = $old_dbh->quote_identifier($row_table->[0]);
+        my $sth_create = $old_dbh->prepare("SHOW CREATE TABLE $table");
         $sth_create->execute;
         my $create_statement = $sth_create->fetch->[1];
         $new_dbh->do($create_statement) or die $new_dbh->errstr;
