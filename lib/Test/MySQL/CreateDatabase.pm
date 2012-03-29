@@ -69,15 +69,17 @@ sub copy_schema_from_test_db ($$$$) {
         warn "Can't copy schema from |$orig_dsn|\n";
         return;
     }
-    my $command = qq[mysqldump --no-data=true -u\Q$user\E -p\Q$password\E \Q$dbname\E];
-    warn $command, "\n" if $DEBUG;
-    my $schema = `$command`;
 
-    while ($schema =~ /\b(CREATE TABLE.*?);/sgi) {
-        my $sql = $1;
-        warn "$sql\n" if $DEBUG;
-        my $sth = $new_dbh->prepare($sql);
-        $sth->execute;
+    my $old_dbh = DBI->connect($orig_dsn, $user, $password)
+        or BAIL_OUT($DBI::errstr);
+
+    my $sth_tables = $old_dbh->prepare('SHOW TABLES');
+    $sth_tables->execute;
+    while (my $row_table = $sth_tables->fetch) {
+        my $sth_create = $old_dbh->prepare("SHOW CREATE TABLE $row_table->[0]");
+        $sth_create->execute;
+        my $create_statement = $sth_create->fetch->[1];
+        $new_dbh->do($create_statement) or die $new_dbh->errstr;
     }
 }
 
