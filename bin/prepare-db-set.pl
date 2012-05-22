@@ -201,7 +201,7 @@ my $new_json = {
     dir_name => mysqld->base_dir,
 };
 
-$list_f->mkpath;
+$list_f->dir->mkpath;
 my $list_file = $list_f->openw;
 print $list_file perl2json_bytes $new_json;
 close $list_file;
