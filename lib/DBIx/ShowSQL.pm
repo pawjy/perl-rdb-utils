@@ -3,13 +3,16 @@ use strict;
 use warnings;
 our $VERSION = '1.0';
 no warnings qw/redefine prototype/;
-use Carp;
+use Carp ();
 use Time::HiRes;
 use DBI;
+use Term::ANSIColor ();
 
 our $WARN;
 our $COUNT;
 our $EscapeMethod ||= 'perl';
+our $Colored;
+$Colored = -t STDIN unless defined $Colored;
 
 if ($ENV{SQL_DEBUG}) {
   $WARN = 1;
@@ -33,6 +36,23 @@ sub _escape ($) {
     }
 }
 
+sub with_color ($$) {
+  if ($Colored) {
+    return Term::ANSIColor::colored ([$_[0]], $_[1]);
+  } else {
+    return $_[1];
+  }
+} # with_color
+
+sub carp (@) {
+  if ($Colored) {
+    Carp::carp (@_, Term::ANSIColor::color ('white'));
+    print STDERR Term::ANSIColor::color ('reset');
+  } else {
+    Carp::carp (@_);
+  }
+} # carp
+
 our $SQLCount ||= 0;
 
 $Carp::CarpInternal{+__PACKAGE__} = 1;
@@ -44,7 +64,9 @@ my $orig_connect = \&DBI::connect;
   my $return = $orig_connect->(@_);
 
   my $tv = Time::HiRes::tv_interval ($time);
-  carp sprintf '%.2f ms | %s', $tv * 1000, $_[1] if $WARN;
+  if ($WARN) {
+      carp with_color 'bright_black', sprintf '%.2f ms | %s', $tv * 1000, $_[1];
+  }
   return $return;
 }; # DBI::connect
 
@@ -62,6 +84,9 @@ my $orig_execute = \&DBI::st::execute;
       : '';
 
   $SQLCount++ if $COUNT;
+  if ($Colored) {
+      $sql =~ s/((?:[Ff][Rr][Oo][Mm]|[Ii][Nn][Tt][Oo]|^[Uu][Pp][Dd][Aa][Tt][Ee])\s*)(\S+)/$1 . with_color 'blue', $2/ge;
+  }
   carp sprintf '%.2f ms | %s%s (rows=%d)',
       $tv * 1000, $sql, $bind, $_[0]->rows if $WARN;
   return $return;
