@@ -73,6 +73,8 @@ the DBI's "dbh" object with which the statements are executed.
 
 L<Test::mysqld>.
 
+dsns.json <https://github.com/wakaba/perl-rdb-utils/wiki/dsns.json>.
+
 =head1 AVAILABILITY
 
 The latest version of the module is available from:
