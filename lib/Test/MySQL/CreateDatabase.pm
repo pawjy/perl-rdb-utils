@@ -24,7 +24,7 @@ sub mysqld () {
             my_cnf => {
                 'skip-networking' => '',
                 'innodb_lock_wait_timeout' => 2,
-                'max_connections' => $ENV{TEST_MYSQL_CREATEDB_MAX_CONNECTIONS} || 100,
+                'max_connections' => $ENV{TEST_MYSQL_CREATEDB_MAX_CONNECTIONS} || 500,
             },
         );
     } or BAIL_OUT($Test::mysqld::errstr || $@);
