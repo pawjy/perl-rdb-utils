@@ -122,6 +122,12 @@ sub _exec_syntax_error_sub_pack_code : Test(1) {
 
 __PACKAGE__->runtests;
 
+# For Test::More
+no warnings 'redefine';
+my $kill_child = \&AnyEvent::DBI::kill_child;
+*AnyEvent::DBI::kill_child = sub { local $?; $kill_child->(@_) };
+
+
 1;
 
 =head1 LICENSE
