@@ -1,0 +1,43 @@
+=head1 NAME
+
+Test::AnyEvent::MySQL::CreateDatabase - Create MySQL database for testing
+
+=head1 SYNOPSIS
+
+  use Test::AnyEvent::MySQL::CreateDatabase;
+  use Path::Class;
+  
+  $prep_f = file("path/to/preparation.txt");
+  $cv = Test::AnyEvent::MySQL::CreateDatabase->prep_f_to_cv($prep_f);
+  
+  $cv->cb(sub {
+    my $obj = $_[0]->recv;
+    $obj->context_begin;
+    
+    my $json_f = $obj->json_f; # Path::Class object
+    my $json = file2perl $json_f;
+    my $dsn = $json->{dsns}->{dbname};
+    
+    # ... Access $dsn
+    
+    $obj->context_end(sub {
+      warn "MySQL stopped";
+    });
+  });
+
+=head1 SEE ALSO
+
+C<bin/prepare-db-set.pl>, L<Test::X1>.
+
+=head1 AUTHOR
+
+Wakaba <wakabatan@hatena.ne.jp>.
+
+=head1 LICENSE
+
+Copyright 2012 Hatena <http://www.hatena.ne.jp>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

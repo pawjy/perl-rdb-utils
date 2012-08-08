@@ -30,6 +30,7 @@ Path::Class~0.26
 inc::latest~0.4002
 AE
 AnyEvent::DBI~2.2
+JSON::XS~2.33
 common::sense~3.6
 Exporter::Lite~0.02
 Test::Builder~0.98

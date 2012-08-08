@@ -1,0 +1,6 @@
+CREATE TABLE hoge (
+  id BIGINT UNSIGNED NOT NULL,
+  created TIMESTAMP NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  KEY (created)
+);

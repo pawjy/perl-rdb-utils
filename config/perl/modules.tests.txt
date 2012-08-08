@@ -1,0 +1,3 @@
+DBI
+Path::Class
+Test::More
