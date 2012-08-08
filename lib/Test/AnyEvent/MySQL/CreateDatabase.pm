@@ -39,17 +39,25 @@ sub json_f {
 
 sub context_begin {
     $_[0]->{count}++;
+    $_[1]->() if $_[1];
 }
 
 sub context_end {
     $_[0]->{count}--;
-    $_[0]->_end($_[1]) unless $_[0]->{count};
+    if ($_[0]->{count}) {
+        $_[1]->() if $_[1];
+    } else {
+        $_[0]->_end($_[1]);
+    }
 }
 
 sub _end {
     local $?; # For Test::More
 
-    return if $_[0]->{_end_invoked};
+    if ($_[0]->{_end_invoked}) {
+        $_[1]->();
+        return;
+    }
     $_[0]->{_end_invoked} = 1;
 
     my $json_file_name = $_[0]->{json_file_name};
