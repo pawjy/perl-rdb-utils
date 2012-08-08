@@ -75,3 +75,58 @@ $ perl path/to/prepare-db-set.pl \
 }
 ||<
 ... といった内容になるので、この dsn を使って作られたデータベースにアクセスできます。
+
+*module* テストの中で preparation.txt からデータベースを用意する
+
+<a href="https://github.com/wakaba/perl-rdb-utils/blob/master/lib/Test/AnyEvent/MySQL/CreateDatabase.pod">Test::AnyEvent::MySQL::CreateDatabase</a> を使うと、 Perl コード中の任意の時点で preparation.txt を元に MySQL データベースを用意することができます。
+
+>|perl|
+  use Test::AnyEvent::MySQL::CreateDatabase;
+  use Path::Class;
+  
+  $prep_f = file("path/to/preparation.txt");
+  $cv = Test::AnyEvent::MySQL::CreateDatabase->prep_f_to_cv($prep_f);
+  
+  $cv->cb(sub {
+    my $obj = $_[0]->recv;
+    $obj->context_begin;
+    
+    my $json_f = $obj->json_f; # Path::Class object
+    my $json = file2perl $json_f;
+    my $dsn = $json->{dsns}->{dbname};
+    
+    # ... Access $dsn
+    
+    $obj->context_end(sub {
+      warn "MySQL stopped";
+    });
+  });
+||<
+
+ここで $obj->context_begin / $obj->context_end は参照カウンターを操作するメソッドで、カウンターが0になると MySQL サーバーを停止します。
+
+これは <a href="https://github.com/wakaba/perl-test-x1">Test::X1</a> の要求するインターフェイスなので、 Test::X1 を使っていれば次のように書けます。
+
+>|sql|
+my $mysql_cv = Test::AnyEvent::MySQL::CreateDatabase->prep_f_to_cv($prep_f);
+
+test {
+    my $c = shift;
+
+    my $json_f = $obj->json_f; # Path::Class object
+    my $json = file2perl $json_f;
+    my $dsn = $json->{dsns}->{dbname};
+    
+    # ... Access $dsn
+
+    done $c;
+} wait => $mysql_cv;
+
+test {
+    ...
+} wait => $mysql_cv;
+
+...
+||<
+
+$obj->context_begin / $obj->context_end は自動的に呼ばれて、 $mysql_cv を使っている最後のテストが終わった時に MySQL サーバーが停止します。
