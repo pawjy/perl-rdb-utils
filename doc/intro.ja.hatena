@@ -1,0 +1,77 @@
+本稿では preparation.txt を使ってテスト用の MySQL データベース一式を用意する方法を説明します。
+[:contents]
+
+* 概要
+
+MySQL データベースを使用するテストでは、予め MySQL のデータベースやテーブル、初期データを準備しておきたいことが非常によくあります。 prepare-db-set.pl を使うと、 preparation.txt に所定の書式で記述した通りのデータベースを簡単に用意することができます。
+
+prepare-db-set.pl は Test::mysqld を使って一時的な MySQL サーバーを起動し、 preparation.txt に従ってテーブルを用意します。用意したデータベースのリストは JSON ファイルとして出力されるので、テストスクリプトはその dsn を DBI などに与えてアクセスさせることができます。
+
+* preparation.txt
+
+preparation.txt は1行に1つ命令を書くことができるテキストファイルです。前の行から後の行へと順に処理されていきます。空行や行の「#」より後 (コメント) は無視されます。 preparation.txt というファイル名がよく使われますが、実際には好きな名前で構いません。
+
+コマンドには次のものがあります。
+
+- db {dbname}
+-- 指定された名前のデータベースを作ります。 (実際には指定された名前そのものではなく、接頭辞や接尾辞が必要に応じて付加されます。)
+-- JSON ファイルからはここで指定したデータベース名をキーとして dsn を取得できます。
+-- 以後のコマンドは指定された名前のデータベースについて実行します。
+- use db {dbname}
+-- 以後のコマンドは指定された名前のデータベースについて実行します。既に作られたデータベースでなければエラーになります。
+- table {filename}
+-- 指定されたファイルから CREATE TABLE 文を抜き出して実行します。ファイルが存在しなければエラーになります。
+- dbtable {filename}
+-- 指定されたファイルから CREATE DATABASE / CREATE TABLE 文を抜き出して実行します。ファイルが存在しなければエラーになります。
+- alter table {filename}
+-- 指定されたファイルから ALTER TABLE 文を抜き出して実行します。ファイルが存在しなければエラーになります。
+- insert {filename}
+-- 指定されたファイルから ALTER TABLE 文を抜き出して実行します。ファイルが存在しなければエラーになります。
+- import {filename}
+-- 指定されたファイルを preparation.txt の一部とみなして実行します。ファイルが存在しなければエラーになります。
+- import glob {filename}
+-- 指定されたファイルを preparation.txt の一部とみなして実行します。
+-- シェルのワイルドカードを解釈します。一致するファイルが複数あっても構いません。ワイルドカードを含む場合、一致するファイルがなくてもエラーになりません。
+
+ファイル名は preparation.txt からの相対パスとして解釈されます。
+
+* prepare-db-set.pl
+
+<a href="https://github.com/wakaba/perl-rdb-utils/blob/master/bin/prepare-db-set.pl">prepara-db-set.pl</a> は次のようにして使います。
+
+>|sh|
+# 起動
+$ perl path/to/prepare-db-set.pl \
+    --preparation-file-name=path/to/preparation.txt \
+    --dsn-list=path/to/dsns.json
+
+# 終了
+$ perl path/to/prepare-db-set.pl \
+    --stop
+    --dsn-list=path/to/dsns.json
+||<
+
+* dsns.json
+
+作成されたデータベースに接続するための dsn は dsns.json に記録されています。
+
+例えば、
+>||
+db dbname1
+table path/to/dbname1.sql
+||<
+... というファイルを使って
+>||
+$ perl path/to/prepare-db-set.pl \
+    --preparation-file-name=path/to/preparation.txt \
+    --dsn-list=path/to/dsns.json
+||<
+... と起動すると、 dsns.json は
+>|javascript|
+{
+  "dsns": {
+    "dbname1": "DBI:mysql:dbname=dbname1_1_test;mysql_socket=/tmp/k3yByCvo9R/tmp/mysql.sock;user=root"
+  }
+}
+||<
+... といった内容になるので、この dsn を使って作られたデータベースにアクセスできます。
