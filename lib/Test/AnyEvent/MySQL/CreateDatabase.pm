@@ -10,9 +10,17 @@ use File::Temp;
 my $prepare_pl_script = file(__FILE__)->dir->parent->parent->parent->parent
     ->file('bin', 'prepare-db-set.pl')->stringify;
 
+sub new {
+    return bless {}, $_[0];
+}
+
+sub json_f {
+    return $_[0]->{json_f} ||= file(File::Temp->new(SUFFIX => '.json')->filename);
+}
+
 sub prep_f_to_cv {
-    my (undef, $prep_f) = @_;
-    my $dsns_json_f = file(File::Temp->new(SUFFIX => '.json')->filename);
+    my ($self, $prep_f) = @_;
+    my $dsns_json_f = $self->json_f;
     my $db_cv = AE::cv;
     my $db_start_cv = run_cmd
         [

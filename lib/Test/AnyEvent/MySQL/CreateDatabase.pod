@@ -8,7 +8,7 @@ Test::AnyEvent::MySQL::CreateDatabase - Create MySQL database for testing
   use Path::Class;
   
   $prep_f = file("path/to/preparation.txt");
-  $cv = Test::AnyEvent::MySQL::CreateDatabase->prep_f_to_cv($prep_f);
+  $cv = Test::AnyEvent::MySQL::CreateDatabase->new->prep_f_to_cv($prep_f);
   
   $cv->cb(sub {
     my $obj = $_[0]->recv;

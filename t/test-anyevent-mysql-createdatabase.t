@@ -20,11 +20,15 @@ test {
 
   my $prep_f = $data_d->file('testdb1-preparation.txt');
 
-  my $cv = Test::AnyEvent::MySQL::CreateDatabase->prep_f_to_cv($prep_f);
+  my $create = Test::AnyEvent::MySQL::CreateDatabase->new;
+  my $json_f = $create->json_f;
+  like $json_f->stringify, qr{\.json$};
+  my $cv = $create->prep_f_to_cv($prep_f);
   $cv->cb(sub {
     my $obj = $_[0]->recv;
     test {
       my $json = file2perl $obj->json_f;
+      is $obj->json_f, $json_f;
       my $dsn = $json->{dsns}->{testdb1};
       my $dbh = DBI->connect($dsn);
 
@@ -53,6 +57,6 @@ test {
       });
     } $c;
   });
-};
+} n => 4;
 
 run_tests;
