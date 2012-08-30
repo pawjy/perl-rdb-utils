@@ -28,6 +28,8 @@ local-submodules generatepm: %: Makefile-setupenv
 git-submodules:
 	$(GIT) submodule update --init
 
+deps: git-submodules pmb-install
+
 ## ------ Tests ------
 
 PROVE = prove
@@ -35,7 +37,7 @@ PERL_ENV = PATH="bin/perl-$(PERL_VERSION)/pm/bin:$(PERL_PATH):$(PATH)" PERL5LIB=
 
 test: test-deps test-main
 
-test-deps: git-submodules local-submodules pmb-install
+test-deps: local-submodules deps
 
 test-main:
 	$(PERL_ENV) $(PROVE) t/*.t
