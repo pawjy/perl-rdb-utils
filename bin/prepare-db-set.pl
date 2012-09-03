@@ -124,6 +124,8 @@ sub debuglog (@) {
 if ($debug_log_file_name) {
     $debug_log_f = file($debug_log_file_name)->absolute->realpath;
     initdebug;
+} elsif ($ENV{TEST_MYSQLD_DEBUG}) {
+    $debug_log_file = \*STDERR;
 }
 
 my $json = {};
