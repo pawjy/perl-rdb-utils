@@ -21,6 +21,9 @@ sub json_f {
 sub prep_f_to_cv {
     my ($self, $prep_f) = @_;
     my $dsns_json_f = $self->json_f;
+
+    local $ENV{PATH} = join ':', grep { not m{/local/} } split /:/, $ENV{PATH};
+    local $ENV{PERL5LIB};
     my $db_cv = AE::cv;
     my $db_start_cv = run_cmd
         [
@@ -68,6 +71,8 @@ sub _end {
     }
     $_[0]->{_end_invoked} = 1;
 
+    local $ENV{PATH} = join ':', grep { not m{/local/} } split /:/, $ENV{PATH};
+    local $ENV{PERL5LIB};
     my $json_file_name = $_[0]->{json_file_name};
     my $cv = run_cmd
         [
