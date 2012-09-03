@@ -18,6 +18,20 @@ sub json_f {
     return $_[0]->{json_f} ||= file(File::Temp->new(SUFFIX => '.json')->filename);
 }
 
+sub onstdout {
+    if (@_ > 1) {
+        $_[0]->{onstdout} = $_[1];
+    }
+    return $_[0]->{onstdout};
+}
+
+sub onstderr {
+    if (@_ > 1) {
+        $_[0]->{onstderr} = $_[1];
+    }
+    return $_[0]->{onstderr};
+}
+
 sub prep_f_to_cv {
     my ($self, $prep_f) = @_;
     my $dsns_json_f = $self->json_f;
@@ -31,11 +45,16 @@ sub prep_f_to_cv {
             $prepare_pl_script,
             '--preparation-file-name' => $prep_f,
             '--dsn-list' => $dsns_json_f,
-        ];
+        ],
+        '>' => $self->onstdout || \*STDOUT,
+        '2>' => $self->onstderr || \*STDERR,
+    ;
     my $hoge = bless {
         count => 0,
         json_f => $dsns_json_f,
         json_file_name => $dsns_json_f->stringify,
+        onstdout => $self->onstdout,
+        onstderr => $self->onstderr,
     }, 'Test::AnyEvent::MySQL::CreateDatabase::Object';
     $db_start_cv->cb(sub { $db_cv->send($hoge); });
     return $db_cv;
@@ -80,7 +99,10 @@ sub _end {
             $prepare_pl_script,
             '--dsn-list' => $json_file_name,
             '--stop',
-        ];
+        ],
+        '>' => $_[0]->{onstdout} || \*STDOUT,
+        '2>' => $_[0]->{onstderr} || \*STDERR,
+    ;
 
     my $cb = $_[1];
     $cv->cb(sub {
