@@ -5,7 +5,8 @@ BEGIN {
     $file_name .= '/../config/perl/libs.txt';
     if (-f $file_name) {
         open my $file, '<', $file_name or die "$0: $file_name: $!";
-        unshift @INC, split /:/, <$file>;
+        my $paths = <$file>; chomp $paths;
+        unshift @INC, split /:/, $paths;
     }
 }
 use warnings;
