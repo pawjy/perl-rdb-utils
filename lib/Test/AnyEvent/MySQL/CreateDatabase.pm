@@ -90,7 +90,7 @@ sub _end {
     }
     $_[0]->{_end_invoked} = 1;
 
-    local $ENV{PATH} = join ':', grep { not m{/local/} } split /:/, $ENV{PATH};
+    local $ENV{PATH} = join ':', grep { not (m{/local/} and not m{^/usr/local}) } split /:/, $ENV{PATH};
     local $ENV{PERL5LIB};
     my $json_file_name = $_[0]->{json_file_name};
     my $cv = run_cmd
