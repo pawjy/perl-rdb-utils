@@ -38,6 +38,7 @@ sub prep_f_to_cv {
 
     local $ENV{PATH} = join ':', grep { not (m{/local/} and not m{^/usr/local/}) } split /:/, $ENV{PATH};
     local $ENV{PERL5LIB};
+    local $ENV{PERL5OPT};
     my $db_cv = AE::cv;
     my $db_start_cv = run_cmd
         [
@@ -92,6 +93,7 @@ sub _end {
 
     local $ENV{PATH} = join ':', grep { not (m{/local/} and not m{^/usr/local/}) } split /:/, $ENV{PATH};
     local $ENV{PERL5LIB};
+    local $ENV{PERL5OPT};
     my $json_file_name = $_[0]->{json_file_name};
     my $cv = run_cmd
         [
