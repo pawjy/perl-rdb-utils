@@ -18,6 +18,13 @@ sub json_f {
     return $_[0]->{json_f} ||= file(File::Temp->new(SUFFIX => '.json')->filename);
 }
 
+sub perl {
+    if (@_ > 1) {
+        $_[0]->{perl} = $_[1];
+    }
+    return $_[0]->{perl} || 'perl';
+}
+
 sub onstdout {
     if (@_ > 1) {
         $_[0]->{onstdout} = $_[1];
@@ -39,10 +46,11 @@ sub prep_f_to_cv {
     local $ENV{PATH} = join ':', grep { not (m{/local/} and not m{^/usr/local/}) } split /:/, $ENV{PATH};
     local $ENV{PERL5LIB};
     local $ENV{PERL5OPT};
+    my $perl = $self->perl;
     my $db_cv = AE::cv;
     my $db_start_cv = run_cmd
         [
-            'perl',
+            $perl,
             $prepare_pl_script,
             '--preparation-file-name' => $prep_f,
             '--dsn-list' => $dsns_json_f,
@@ -54,6 +62,7 @@ sub prep_f_to_cv {
         count => 0,
         json_f => $dsns_json_f,
         json_file_name => $dsns_json_f->stringify,
+        perl => $perl,
         onstdout => $self->onstdout,
         onstderr => $self->onstderr,
     }, 'Test::AnyEvent::MySQL::CreateDatabase::Object';
@@ -66,6 +75,10 @@ use AnyEvent::Util;
 
 sub json_f {
     return $_[0]->{json_f};
+}
+
+sub perl {
+    return $_[0]->{perl};
 }
 
 sub context_begin {
@@ -97,7 +110,7 @@ sub _end {
     my $json_file_name = $_[0]->{json_file_name};
     my $cv = run_cmd
         [
-            'perl',
+            $_[0]->perl,
             $prepare_pl_script,
             '--dsn-list' => $json_file_name,
             '--stop',
