@@ -70,17 +70,23 @@ my $orig_connect = \&DBI::connect;
   return $return;
 }; # DBI::connect
 
+my $BoundParams = {};
+
 my $orig_execute = \&DBI::st::execute;
 *DBI::st::execute = sub {
-  #my ($sth, @binds) = @_;
+  my ($sth, @binds) = @_;
   my $time = [Time::HiRes::gettimeofday];
 
   my $return = $orig_execute->(@_);
 
   my $tv = Time::HiRes::tv_interval ($time);
-  my $sql = $_[0]->{Database}->{Statement};
-  my $bind = @_ > 1
-      ? ' (' . join (', ', map { defined $_ ? _escape $_ : '(undef)' } @_[1..$#_]) . ')'
+  my $sql = $sth->{Database}->{Statement};
+  if (@binds == 0 and $BoundParams->{$sth}) {
+      @binds = @{$BoundParams->{$sth}};
+      delete $BoundParams->{$sth};
+  }
+  my $bind = @binds
+      ? ' (' . join (', ', map { defined $_ ? _escape $_ : '(undef)' } @binds) . ')'
       : '';
 
   $SQLCount++ if $COUNT;
@@ -91,6 +97,17 @@ my $orig_execute = \&DBI::st::execute;
       $tv * 1000, $sql, $bind, $_[0]->rows if $WARN;
   return $return;
 }; # DBI::st::execute
+
+my $orig_bind_param = \&DBI::st::bind_param;
+*DBI::st::bind_param = sub {
+  my ($sth, $i, $value, @args) = @_;
+
+  my $return = $orig_bind_param->(@_);
+
+  $BoundParams->{$sth}->[$i-1] = $value;
+
+  return $return;
+}; # DBI::st::bind_param
 
 my $orig_do = \&DBI::db::do;
 *DBI::db::do = sub {
