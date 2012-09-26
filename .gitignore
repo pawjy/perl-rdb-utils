@@ -4,4 +4,6 @@
 .*.BAK
 pod2htmi.tmp
 pod2htmd.tmp
-./dist
+/dist/
+/Makefile.setupenv
+
