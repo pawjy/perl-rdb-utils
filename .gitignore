@@ -7,3 +7,4 @@ pod2htmd.tmp
 /dist/
 /Makefile.setupenv
 /config/perl/libs.txt
+/local/
