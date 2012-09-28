@@ -1,7 +1,7 @@
 package Test::AnyEvent::MySQL::CreateDatabase;
 use strict;
 use warnings;
-our $VERSION = '1.0';
+our $VERSION = '2.0';
 use AnyEvent;
 use AnyEvent::Util;
 use Path::Class;
@@ -37,6 +37,21 @@ sub onstderr {
         $_[0]->{onstderr} = $_[1];
     }
     return $_[0]->{onstderr};
+}
+
+sub prep_text_to_cv {
+    my ($self, $prep_text) = @_;
+    
+    my $tempfile = File::Temp->new;
+    print $tempfile $prep_text;
+    close $tempfile;
+
+    my $cv = AE::cv;
+    $self->prep_f_to_cv(file($tempfile->filename))->cb(sub {
+        undef $tempfile;
+        $cv->send($_[0]->recv);
+    });
+    return $cv;
 }
 
 sub prep_f_to_cv {

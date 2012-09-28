@@ -25,6 +25,15 @@ Test::AnyEvent::MySQL::CreateDatabase - Create MySQL database for testing
     });
   });
 
+=head1 METHODS
+
+The C<prep_f_to_cv> method takes a L<Path::Class::File> object which
+represents the preparation file used as the input to the
+C<bin/prepare-db-set.pl> script.  The C<prep_text_to_cv> method takes
+the content of the preparation text used as the input to the script.
+Both methods return an L<AnyEvent::CondVar> object to which the object
+holding the information on the MySQL process is sent.
+
 =head1 SEE ALSO
 
 C<bin/prepare-db-set.pl>, L<Test::X1>.
