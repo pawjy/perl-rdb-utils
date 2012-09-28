@@ -44,7 +44,7 @@ pmbp-install: local/bin/pmbp.pl
 git-submodules:
 	$(GIT) submodule update --init
 
-deps: git-submodules pmb-install
+deps: git-submodules pmb-install lperl
 
 ## ------ Tests ------
 

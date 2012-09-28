@@ -22,7 +22,10 @@ sub perl {
     if (@_ > 1) {
         $_[0]->{perl} = $_[1];
     }
-    return $_[0]->{perl} || 'perl';
+    return $_[0]->{perl} || do {
+        my $perl = file(__FILE__)->dir->parent->parent->parent->parent->file('perl');
+        -f $perl ? $perl->stringify : 'perl';
+    };
 }
 
 sub onstdout {
