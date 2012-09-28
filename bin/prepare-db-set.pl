@@ -1,8 +1,11 @@
 #!/usr/bin/perl
 use strict;
 BEGIN {
+    require Config;
     my $file_name = __FILE__; $file_name =~ s{[^/\\]+$}{}; $file_name ||= '.';
-    $file_name .= '/../config/perl/libs.txt';
+    my $fn = $file_name . sprintf '/../local/config/perl/libs-%vd-%s.txt',
+        $^V, $Config::Config{archname};
+    $fn = $file_name . '/../config/perl/libs.txt' unless -f $file_name;
     if (-f $file_name) {
         open my $file, '<', $file_name or die "$0: $file_name: $!";
         my $paths = <$file>; chomp $paths;
