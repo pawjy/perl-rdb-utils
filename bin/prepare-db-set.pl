@@ -6,8 +6,8 @@ BEGIN {
     my $fn = $file_name . sprintf '/../local/config/perl/libs-%vd-%s.txt',
         $^V, $Config::Config{archname};
     $fn = $file_name . '/../config/perl/libs.txt' unless -f $file_name;
-    if (-f $file_name) {
-        open my $file, '<', $file_name or die "$0: $file_name: $!";
+    if (-f $fn) {
+        open my $file, '<', $fn or die "$0: $fn: $!";
         my $paths = <$file>; chomp $paths;
         unshift @INC, split /:/, $paths;
     }
