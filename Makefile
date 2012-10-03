@@ -43,8 +43,7 @@ pmbp-update: local/bin/pmbp.pl
 pmbp-install: local/bin/pmbp.pl
 	$(PERL_ENV) $(PERL) local/bin/pmbp.pl --install \
 	    --create-perl-command-shortcut=perl \
-	    --create-perl-command-shortcut=prove \
-	    --create-perl-command-shortcut=plackup
+	    --create-perl-command-shortcut=prove
 
 git-submodules:
 	$(GIT) submodule update --init
