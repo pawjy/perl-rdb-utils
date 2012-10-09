@@ -19,7 +19,7 @@ Makefile-setupenv: Makefile.setupenv
 Makefile.setupenv:
 	$(WGET) -O $@ https://raw.github.com/wakaba/perl-setupenv/master/Makefile.setupenv
 
-lperl lprove perl-version perl-exec \
+perl-version perl-exec \
 local-submodules generatepm: %: Makefile-setupenv
 	$(MAKE) --makefile Makefile.setupenv $@ \
 	    PMB_PMTAR_REPO_URL=$(PMB_PMTAR_REPO_URL) \
@@ -27,6 +27,8 @@ local-submodules generatepm: %: Makefile-setupenv
 
 pmb-update: pmbp-update
 pmb-install: pmbp-install
+lperl: pmbp-install
+lprove: pmbp-install
 
 local/bin/pmbp.pl: always
 	mkdir -p local/bin
@@ -39,7 +41,9 @@ pmbp-update: local/bin/pmbp.pl
 	$(PERL_ENV) $(PERL) local/bin/pmbp.pl --update
 
 pmbp-install: local/bin/pmbp.pl
-	$(PERL_ENV) $(PERL) local/bin/pmbp.pl --install
+	$(PERL_ENV) $(PERL) local/bin/pmbp.pl --install \
+	    --create-perl-command-shortcut=perl \
+	    --create-perl-command-shortcut=prove
 
 git-submodules:
 	$(GIT) submodule update --init
