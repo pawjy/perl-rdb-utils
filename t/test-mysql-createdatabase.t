@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Path::Class;
 use lib file(__FILE__)->dir->parent->subdir('lib')->stringify;
-use lib file(__FILE__)->dir->parent->subdir('modules', 'perl-test-moremore', 'lib')->stringify;
+use lib file(__FILE__)->dir->parent->subdir('t_deps', 'modules', 'test-moremore', 'lib')->stringify;
 use base qw(Test::Class);
 
 BEGIN { $Test::MySQL::CreateDatabase::DEBUG = 1 if $ENV{MOCO_DEBUG} };

@@ -4,62 +4,50 @@ all:
 
 WGET = wget
 GIT = git
-PERL = perl
-PERL_VERSION = 5.16.1
-PERL_PATH = $(abspath local/perlbrew/perls/perl-$(PERL_VERSION)/bin)
-PERL_ENV = PATH="$(abspath local/perlbrew/perls/perl-$(PERL_VERSION)/bin):$(abspath local/perl-$(PERL_VERSION)/pm/bin):$(PATH)" PERL5LIB="$(shell cat config/perl/libs.txt)"
-
-PMB_PMTAR_REPO_URL =
-PMB_PMPP_REPO_URL = 
 
 Makefile-setupenv: Makefile.setupenv
 	$(MAKE) --makefile Makefile.setupenv setupenv-update \
-	    SETUPENV_MIN_REVISION=20120337
+	    SETUPENV_MIN_REVISION=20121001
 
 Makefile.setupenv:
 	$(WGET) -O $@ https://raw.github.com/wakaba/perl-setupenv/master/Makefile.setupenv
 
-perl-version perl-exec \
-local-submodules generatepm: %: Makefile-setupenv
-	$(MAKE) --makefile Makefile.setupenv $@ \
-	    PMB_PMTAR_REPO_URL=$(PMB_PMTAR_REPO_URL) \
-	    PMB_PMPP_REPO_URL=$(PMB_PMPP_REPO_URL)
+generatepm: %: Makefile-setupenv
+	$(MAKE) --makefile Makefile.setupenv $@
 
 pmb-update: pmbp-update
 pmb-install: pmbp-install
 lperl: pmbp-install
 lprove: pmbp-install
+local-perl: pmbp-install
 
-local/bin/pmbp.pl: always
+local/bin/pmbp.pl:
 	mkdir -p local/bin
 	$(WGET) -O $@ https://github.com/wakaba/perl-setupenv/raw/master/bin/pmbp.pl
 
-local-perl: local/bin/pmbp.pl
-	$(PERL_ENV) $(PERL) local/bin/pmbp.pl --perl-version $(PERL_VERSION) --install-perl
-
 pmbp-update: local/bin/pmbp.pl
-	$(PERL_ENV) $(PERL) local/bin/pmbp.pl --update
+	perl local/bin/pmbp.pl --update
 
 pmbp-install: local/bin/pmbp.pl
-	$(PERL_ENV) $(PERL) local/bin/pmbp.pl --install \
+	perl local/bin/pmbp.pl --install \
 	    --create-perl-command-shortcut=perl \
 	    --create-perl-command-shortcut=prove
 
 git-submodules:
 	$(GIT) submodule update --init
 
-deps: git-submodules pmb-install lperl
+deps: git-submodules pmbp-install
 
 ## ------ Tests ------
 
-PROVE = prove
+PROVE = ./prove
 
 test: test-deps test-main
 
-test-deps: local-submodules deps
+test-deps: deps
 
 test-main:
-	$(PERL_ENV) $(PROVE) t/*.t
+	$(PROVE) t/*.t
 
 ## ------ Packaging ------
 

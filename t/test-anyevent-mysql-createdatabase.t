@@ -1,11 +1,7 @@
 use strict;
 BEGIN {
   my $file_name = __FILE__; $file_name =~ s{[^/]+$}{}; $file_name ||= '.';
-  $file_name .= '/../config/perl/libs.txt';
-  open my $file, '<', $file_name or die "$0: $file_name: $!";
-  unshift @INC, split /:/, <$file>;
-  $file_name =~ s{/config/perl/libs.txt$}{/local/submodules/*/lib};
-  unshift @INC, glob $file_name;
+  unshift @INC, glob "$file_name/../t_deps/modules/*/lib";
 }
 use warnings;
 use Test::X1;
