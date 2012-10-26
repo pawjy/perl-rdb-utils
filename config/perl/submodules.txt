@@ -1,3 +1,0 @@
-git://github.com/wakaba/perl-test-moremore
-git://github.com/wakaba/perl-test-x1
-git://github.com/wakaba/perl-json-functions-xs
