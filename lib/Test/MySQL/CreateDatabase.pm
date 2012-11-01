@@ -17,6 +17,7 @@ sub mysqld () {
     return $mysqld if $mysqld;
 
     warn "Initializing Test::mysqld...\n" if $DEBUG;
+    my $max = $ENV{TEST_MYSQL_CREATEDB_MAX_CONNECTIONS} || 1000;
     $mysqld = eval {
         Test::mysqld->new(
             mysqld => $ENV{MYSQLD} || Test::mysqld::_find_program(qw/mysqld bin libexec sbin/),
@@ -24,10 +25,14 @@ sub mysqld () {
             my_cnf => {
                 'skip-networking' => '',
                 'innodb_lock_wait_timeout' => 2,
-                'max_connections' => $ENV{TEST_MYSQL_CREATEDB_MAX_CONNECTIONS} || 2000,
+                'max_connections' => $max,
             },
         );
     } or BAIL_OUT($Test::mysqld::errstr || $@);
+    my $dbh = DBI->connect($mysqld->dsn(dbname => 'mysql'))
+        or BAIL_OUT($DBI::errstr);
+    $dbh->do(sprintf 'SET GLOBAL max_connections = %d', $max)
+        or BAIL_OUT($DBI::errstr);
     warn "done.\n" if $DEBUG;
     return $mysqld;
 }
@@ -36,6 +41,7 @@ sub test_dbh_do ($) {
     my $dbh = DBI->connect(mysqld->dsn(dbname => 'mysql'))
         or BAIL_OUT($DBI::errstr);
     $dbh->do(shift || die) or BAIL_OUT($DBI::errstr);
+    $dbh->disconnect;
 }
 
 our $DBNumber = 1;
