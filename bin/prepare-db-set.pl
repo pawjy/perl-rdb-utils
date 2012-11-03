@@ -167,10 +167,11 @@ while (my $op = shift @operation) {
         my $dsn = test_dsn $op->{name};
         $last_dbh = dsn2dbh $dsn;
         $dsns->{$op->{name}} = $dsn;
-        $dbhs->{$op->{name}} = $last_dbh;
+        $dbhs = {$op->{name} => $last_dbh};
         warn "CREATE DATABASE $op->{name}\n";
     } elsif ($op->{type} eq 'use database') {
-        $last_dbh = $dbhs->{$op->{name}};
+        $last_dbh = $dbhs->{$op->{name}} || dsn2dbh $dsns->{$op->{name}};
+        $dbhs = {$op->name => $last_dbh};
         warn "USE $op->{name}\n";
     } elsif ($op->{type} eq 'create db and table') {
         my $subops = extract_schema_sql_from_file $op->{f};
