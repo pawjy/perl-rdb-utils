@@ -135,21 +135,6 @@ while (my $op = shift @operation) {
         $last_dbh = $dbhs->{$op->{name}} || dsn2dbh $dsns->{$op->{name}};
         $dbhs = {$op->name => $last_dbh};
         warn "USE $op->{name}\n";
-    } elsif ($op->{type} eq 'create db and table') {
-        my $subops = extract_schema_sql_from_file $op->{f};
-        warn "Load CREATEs from @{[$op->{f}->relative]}\n";
-        my @newop;
-        for (@$subops) {
-            if (/^CREATE DATABASE (?:IF NOT EXISTS )?(\S+)$/) {
-                push @newop, {type => 'create database', name => $1};
-                push @newop, {type => 'use database', name => $1};
-            } elsif (/^CREATE TABLE / or /^INSERT /) {
-                push @newop, {type => 'sql', value => $_};
-            } else {
-                die "Operation |$_| is not supported\n";
-            }
-        }
-        unshift @operation, @newop;
     } elsif ($op->{type} eq 'create table') {
         die "Database is not created before CREATE TABLE" unless $last_dbh;
         copy_schema_from_file $op->{f} => $last_dbh;
