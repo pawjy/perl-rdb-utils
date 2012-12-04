@@ -1,0 +1,20 @@
+=head1 NAME
+
+DBIx::Preparation::Parser - The "preparation.txt" format parser
+
+=head1 DESCRIPTION
+
+XXX
+
+=head1 AUTHOR
+
+Wakaba <wakabatan@hatena.ne.jp>.
+
+=head1 LICENSE
+
+Copyright 2011-2012 Hatena <http://www.hatena.ne.jp/>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
