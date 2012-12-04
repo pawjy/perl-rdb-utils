@@ -6,7 +6,7 @@ use AnyEvent::Worker;
 require DBIx::ShowSQL if $ENV{SQL_DEBUG};
 
 sub new {
-    return bless {}, $_[0];
+    return bless {db_set_index => 1}, $_[0];
 }
 
 sub worker {
@@ -34,7 +34,11 @@ sub get_pid_as_cv {
 }
 
 sub db_set_index {
-    return $_[0]->{db_set_index} ||= 1;
+    return $_[0]->{db_set_index};
+}
+
+sub reset_db_set_index {
+    $_[0]->{db_set_index}++;
 }
 
 sub get_db_name {
