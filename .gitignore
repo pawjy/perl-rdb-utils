@@ -11,3 +11,5 @@ pod2htmd.tmp
 /perl
 /prove
 /deps/
+/plackup
+/cin
