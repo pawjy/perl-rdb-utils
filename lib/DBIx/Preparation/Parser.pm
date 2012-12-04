@@ -38,10 +38,12 @@ sub parse_char_string {
         } elsif (/^\s*table\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'create table',
-                 f => file($1)->absolute($base_d)->realpath};
+                 f => file($1)->absolute($base_d)};
+            $operation[-1]->{f} = $operation[-1]->{f}->resolve || $operation[-1]->{f};
             $operation[-1]->{sqls} = [$self->extract_statements_from_f($operation[-1]->{f}, sub { $_[0] =~ /^CREATE\s+TABLE/i })];
         } elsif (/^\s*dbtable\s+(\S+)\s*$/) {
-            my $f = file($1)->absolute($base_d)->realpath;
+            my $f = file($1)->absolute($base_d);
+            $f = $f->resolve || $f;
             for ($self->extract_statements_from_f($f, sub { $_[0] =~ /^CREATE\s+/i })) {
                 if (/^CREATE DATABASE (?:IF NOT EXISTS )?(\S+)$/) {
                     push @operation, {type => 'create database', name => $1};
@@ -55,11 +57,13 @@ sub parse_char_string {
         } elsif (/^\s*alter\s+table\s+(\S+)\s*$/) {
             push @operation,
                 {type => 'alter table',
-                 f => file($1)->absolute($base_d)->realpath};
+                 f => file($1)->absolute($base_d)};
+            $operation[-1]->{f} = $operation[-1]->{f}->resolve || $operation[-1]->{f};
             $operation[-1]->{sqls} = [$self->extract_statements_from_f($operation[-1]->{f}, sub { $_[0] =~ /^ALTER\s+TABLE/i })];
         } elsif (/^\s*insert\s+(\S+)\s*$/) {
             push @operation,
-                {type => 'insert', f => file($1)->absolute($base_d)->realpath};
+                {type => 'insert', f => file($1)->absolute($base_d)};
+            $operation[-1]->{f} = $operation[-1]->{f}->resolve || $operation[-1]->{f};
             $operation[-1]->{sqls} = [$self->extract_statements_from_f($operation[-1]->{f}, sub { $_[0] =~ /^INSERT/i })];
         } elsif (/^\s*import\s+glob\s+(\S+)\s*$/) {
             for (glob file($1)->absolute($base_d)->stringify) {

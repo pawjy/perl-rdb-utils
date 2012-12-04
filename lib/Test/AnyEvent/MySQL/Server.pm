@@ -27,7 +27,9 @@ sub worker {
 sub get_pid_as_cv {
     my $self = shift;
     my $cv = AE::cv;
-    $self->worker->do('get_pid', sub { $cv->send($_[1]) });
+    $self->worker->do('get_pid', sub {
+        $cv->send(Test::AnyEvent::MySQL::Server::Result->new(data => $_[1], error => $@));
+    });
     return $cv;
 }
 
@@ -45,12 +47,41 @@ sub create_database_as_cv {
     my ($self, $dbname) = @_;
     my $cv = AE::cv;
     $self->worker->do('create_database', $self->get_db_name($dbname), sub {
-        $cv->send($_[1]);
+        $cv->send(Test::AnyEvent::MySQL::Server::Result->new(data => $_[1], error => $@));
     });
     return $cv;
 }
 
+sub process_prep_f_as_cv {
+    my ($self, $f) = @_;
+    my $cv = AE::cv;
+    unless (-f $f) {
+        $cv->send(Test::AnyEvent::MySQL::Server::Result->new(error => "$f not found"));
+        return $cv;
+    }
+    $self->worker->do('process_prep', $f->resolve->stringify, sub {
+        $cv->send(Test::AnyEvent::MySQL::Server::Result->new(data => $_[1], error => $@));
+    });
+    return $cv;
+}
+
+package Test::AnyEvent::MySQL::Server::Result;
+
+sub new {
+    my $class = shift;
+    return bless {@_}, $class;
+}
+
+sub data {
+    return $_[0]->{data};
+}
+
+sub error {
+    return $_[0]->{error};
+}
+
 package Test::AnyEvent::MySQL::Server::Worker;
+use Path::Class;
 
 sub new {
     return bless {}, $_[0];
@@ -80,6 +111,58 @@ sub create_database {
     $sth->execute;
     die "Can't create database" unless $sth->rows > 0;
     return $_[0]->get_dsn($_[1]);
+}
+
+sub process_prep {
+    my ($self, $file_name) = @_;
+    my $dsns = {};
+    require DBIx::Preparation::Parser;
+    my $parser = DBIx::Preparation::Parser->new;
+    my $last_db_name;
+    for my $op ($parser->parse_f(file($file_name))) {
+        if ($op->{type} eq 'create database') {
+            my $dsn = $self->create_database($op->{name});
+            $dsns->{$op->{name}} = $dsn;
+            $last_db_name = $op->{name};
+            #warn "CREATE DATABASE $op->{name}\n";
+        } elsif ($op->{type} eq 'use database') {
+            $last_db_name = $op->{name};
+            #warn "USE $op->{name}\n";
+        } elsif ($op->{type} eq 'create table') {
+            die "Database is not created before CREATE TABLE"
+                unless defined $last_db_name;
+            my $dbh = $self->get_dbh($self->get_dsn($last_db_name));
+            Test::MySQL::CreateDatabase::copy_schema_from_file
+                    ($op->{f} => $dbh);
+            #warn "Load CREATE TABLEs from @{[$op->{f}->relative]}\n";
+        } elsif ($op->{type} eq 'insert') {
+            die "Database is not created before INSERT"
+                unless defined $last_db_name;
+            my $dbh = $self->get_dbh($self->get_dsn($last_db_name));
+            Test::MySQL::CreateDatabase::execute_inserts_from_file
+                    ($op->{f} => $dbh);
+            #warn "Load INSERTs from @{[$op->{f}->relative]}\n";
+        } elsif ($op->{type} eq 'alter table') {
+            die "Database is not created before ALTER TABLE"
+                unless defined $last_db_name;
+            my $dbh = $self->get_dbh($self->get_dsn($last_db_name));
+            Test::MySQL::CreateDatabase::execute_alter_tables_from_file
+                    ($op->{f} => $dbh);
+            #warn "Load ALTER TABLEs from @{[$op->{f}->relative]}\n";
+        } elsif ($op->{type} eq 'sql') {
+            die "Database is not created before SQL execution"
+                unless defined $last_db_name;
+            my $dbh = $self->get_dbh($self->get_dsn($last_db_name));
+            $dbh->prepare($op->{value})->execute;
+            my $v = substr $op->{value}, 0, 50;
+            $v .= '...' if $v ne $op->{value};
+            $v =~ s/\x0A/ /g;
+            #warn "SQL: $v\n";
+        } else {
+            die "Operation |$op->{type}| is not supported";
+        }
+    }
+    return {dsns => $dsns};
 }
 
 sub install_signal_handlers {

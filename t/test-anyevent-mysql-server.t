@@ -19,9 +19,10 @@ test {
     my $server = Test::AnyEvent::MySQL::Server->new;
     $cv->begin;
     $server->create_database_as_cv('hoge')->cb(sub {
-        my $dsn = $_[0]->recv;
+        my $result = $_[0]->recv;
         test {
-            ok !$@;
+            ok !$result->error;
+            my $dsn = $result->data;
             like $dsn, qr{dbname=db1_hoge_test;};
             my $dbh = DBI->connect($dsn, undef, undef, {RaiseError => 1});
             $dbh->prepare('CREATE TABLE `hoge` (id int)')->execute;
@@ -35,10 +36,10 @@ test {
     $cv->begin;
     my $pid;
     $server->get_pid_as_cv->cb(sub {
-        $pid = $_[0]->recv;
+        my $result = $_[0]->recv;
         test {
-            ok !$@;
-            ok $pid;
+            ok !$result->error;
+            ok $pid = $result->data;
             $cv->end;
         } $c;
     });
@@ -64,5 +65,31 @@ test {
         } $c;
     });
 } n => 6;
+
+my $data_d = file(__FILE__)->dir->subdir('data');
+
+test {
+    my $c = shift;
+    
+    my $server = Test::AnyEvent::MySQL::Server->new;
+    my $prep_f = $data_d->file('testdb1-preparation.txt');
+    $server->process_prep_f_as_cv($prep_f)->cb(sub {
+        my $result = $_[0]->recv;
+        test {
+            ok !$result->error;
+            my $json = $result->data;
+            my $dsn = $json->{dsns}->{testdb1};
+            my $dbh = DBI->connect($dsn);
+            
+            $dbh->prepare('insert into hoge (id, created) value (12, "2012-05-01 12:44:11")')->execute;
+            my $sth = $dbh->prepare('select * from hoge');
+            $sth->execute;
+            is_deeply $sth->fetchrow_hashref, {id => 12, created => '2012-05-01 12:44:11'};
+            done $c;
+            undef $c;
+            undef $server;
+        } $c;
+    });
+} n => 2, name => 'file';
 
 run_tests;
