@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use AnyEvent;
 use AnyEvent::Worker;
+require DBIx::ShowSQL if $ENV{SQL_DEBUG};
 
 sub new {
     return bless {}, $_[0];
@@ -30,10 +31,20 @@ sub get_pid_as_cv {
     return $cv;
 }
 
+sub db_set_index {
+    return $_[0]->{db_set_index} ||= 1;
+}
+
+sub get_db_name {
+    return sprintf 'db%d_%s_test',
+        $_[0]->db_set_index,
+        $_[1];
+}
+
 sub create_database_as_cv {
     my ($self, $dbname) = @_;
     my $cv = AE::cv;
-    $self->worker->do('create_database', $dbname, sub {
+    $self->worker->do('create_database', $self->get_db_name($dbname), sub {
         $cv->send($_[1]);
     });
     return $cv;
@@ -52,15 +63,11 @@ sub mysqld {
 
 sub get_dbh {
     require DBI;
-    return DBI->connect($_[1], undef, undef, {RaiseError => 1, PrintError => 0});
+    return $_[0]->{dbh}->{$_[1]} ||= DBI->connect($_[1], undef, undef, {RaiseError => 1, PrintError => 0});
 }
 
 sub get_dsn {
     return $_[0]->mysqld->dsn(dbname => $_[1])
-}
-
-sub mysql_dbh {
-    return $_[0]->{mysql_dbh} ||= $_[0]->get_dbh($_[0]->get_dsn($_[1]));
 }
 
 sub get_pid {
@@ -68,7 +75,7 @@ sub get_pid {
 }
 
 sub create_database {
-    my $dbh = $_[0]->mysql_dbh;
+    my $dbh = $_[0]->get_dbh($_[0]->get_dsn('mysql'));
     my $sth = $dbh->prepare(sprintf 'CREATE DATABASE %s', $dbh->quote_identifier($_[1]));
     $sth->execute;
     die "Can't create database" unless $sth->rows > 0;

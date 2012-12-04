@@ -11,7 +11,6 @@ use Test::AnyEvent::MySQL::Server;
 use DBI;
 use AnyEvent;
 use AnyEvent::Timer::Retry;
-#use DBIx::ShowSQL;
 
 test {
     my $c = shift;
@@ -23,7 +22,7 @@ test {
         my $dsn = $_[0]->recv;
         test {
             ok !$@;
-            like $dsn, qr{hoge};
+            like $dsn, qr{dbname=db1_hoge_test;};
             my $dbh = DBI->connect($dsn, undef, undef, {RaiseError => 1});
             $dbh->prepare('CREATE TABLE `hoge` (id int)')->execute;
             $dbh->prepare('INSERT INTO `hoge` (id) values (1)')->execute;
