@@ -7,3 +7,6 @@
 [submodule "modules/json-functions-xs"]
 	path = modules/json-functions-xs
 	url = git://github.com/wakaba/perl-json-functions-xs
+[submodule "t_deps/modules/anyevent-timer-retry"]
+	path = t_deps/modules/anyevent-timer-retry
+	url = git://github.com/wakaba/perl-anyevent-timer-retry
