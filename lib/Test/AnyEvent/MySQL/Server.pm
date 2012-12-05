@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use AnyEvent;
 use AnyEvent::Worker;
+use JSON::Functions::XS qw(perl2json_bytes);
 require DBIx::ShowSQL if $ENV{SQL_DEBUG};
 
 sub new {
@@ -63,10 +64,44 @@ sub process_prep_f_as_cv {
         $cv->send(Test::AnyEvent::MySQL::Server::Result->new(error => "$f not found"));
         return $cv;
     }
-    $self->worker->do('process_prep', $f->resolve->stringify, sub {
+    $self->worker->do('process_prep', $f->resolve->stringify, $self->db_set_index, sub {
         $cv->send(Test::AnyEvent::MySQL::Server::Result->new(data => $_[1], error => $@));
     });
     return $cv;
+}
+
+sub prep_f_to_dsns_json_as_cv {
+    my ($self, $f => $g, %args) = @_;
+    my $cv = AE::cv;
+    $self->process_prep_f_as_cv($f)->cb(sub {
+        my $result = $_[0]->recv;
+        #warn $result->error;
+        unless ($result->error) {
+            my $json = $result->data;
+            if ($args{dup_master_defs}) {
+                $json->{alt_dsns}->{master} = $json->{dsns};
+            }
+            $g->dir->mkpath;
+            my $gh = $g->openw;
+            my $w; $w = AE::io $gh, 1, sub {
+                print $gh perl2json_bytes $json;
+                undef $w;
+            };
+        }
+        $cv->send($result);
+    });
+    return $cv;
+}
+
+sub stop_as_cv {
+    my $cv = AE::cv;
+    delete $_[0]->{worker};
+    $cv->send(Test::AnyEvent::MySQL::Server::Result->new);
+    return $cv;
+}
+
+sub DESTROY {
+    $_[0]->stop_as_cv;
 }
 
 package Test::AnyEvent::MySQL::Server::Result;
@@ -118,19 +153,21 @@ sub create_database {
 }
 
 sub process_prep {
-    my ($self, $file_name) = @_;
+    my ($self, $file_name, $db_set_index) = @_;
     my $dsns = {};
     require DBIx::Preparation::Parser;
     my $parser = DBIx::Preparation::Parser->new;
     my $last_db_name;
     for my $op ($parser->parse_f(file($file_name))) {
         if ($op->{type} eq 'create database') {
-            my $dsn = $self->create_database($op->{name});
+            my $name = sprintf 'db%d_%s_test', $db_set_index, $op->{name};
+            my $dsn = $self->create_database($name);
             $dsns->{$op->{name}} = $dsn;
-            $last_db_name = $op->{name};
+            $last_db_name = $name;
             #warn "CREATE DATABASE $op->{name}\n";
         } elsif ($op->{type} eq 'use database') {
-            $last_db_name = $op->{name};
+            my $name = sprintf 'db%d_%s_test', $db_set_index, $op->{name};
+            $last_db_name = $name;
             #warn "USE $op->{name}\n";
         } elsif ($op->{type} eq 'create table') {
             die "Database is not created before CREATE TABLE"
