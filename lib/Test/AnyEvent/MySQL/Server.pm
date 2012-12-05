@@ -75,7 +75,6 @@ sub prep_f_to_dsns_json_as_cv {
     my $cv = AE::cv;
     $self->process_prep_f_as_cv($f)->cb(sub {
         my $result = $_[0]->recv;
-        #warn $result->error;
         unless ($result->error) {
             my $json = $result->data;
             if ($args{dup_master_defs}) {
@@ -85,10 +84,13 @@ sub prep_f_to_dsns_json_as_cv {
             my $gh = $g->openw;
             my $w; $w = AE::io $gh, 1, sub {
                 print $gh perl2json_bytes $json;
+                close $gh;
+                $cv->send($result);
                 undef $w;
             };
+        } else {
+            $cv->send($result);
         }
-        $cv->send($result);
     });
     return $cv;
 }
@@ -108,7 +110,9 @@ package Test::AnyEvent::MySQL::Server::Result;
 
 sub new {
     my $class = shift;
-    return bless {@_}, $class;
+    my $self = bless {@_}, $class;
+    delete $self->{error} if defined $self->{data};
+    return $self;
 }
 
 sub data {
@@ -212,6 +216,7 @@ sub install_signal_handlers {
         $self->mysqld->stop;
         exit;
     };
+    return 1;
 }
 
 1;
