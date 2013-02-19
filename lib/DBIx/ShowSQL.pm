@@ -81,7 +81,7 @@ my $orig_connect = \&DBI::connect;
 
   my $tv = Time::HiRes::tv_interval ($time);
   if ($WARN) {
-    carp with_color 'bright_black', sprintf "runtime:%.2f\tdsn:%s",
+    carp with_color 'bright_black', sprintf "runtime:%.2f\tdsn:%s\toperation_class:DBI\toperation_method:connect",
         $tv * 1000, _ltsv_escape $_[1];
   }
   return $return;
