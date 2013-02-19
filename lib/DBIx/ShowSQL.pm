@@ -81,7 +81,7 @@ my $orig_connect = \&DBI::connect;
 
   my $tv = Time::HiRes::tv_interval ($time);
   if ($WARN) {
-    carp with_color 'bright_black', sprintf "time:%.2f\tdsn:%s",
+    carp with_color 'bright_black', sprintf "runtime:%.2f\tdsn:%s",
         $tv * 1000, _ltsv_escape $_[1];
   }
   return $return;
@@ -111,7 +111,7 @@ my $orig_execute = \&DBI::st::execute;
   if ($Colored) {
     $sql =~ s/((?:[Ff][Rr][Oo][Mm]|[Ii][Nn][Tt][Oo]|^[Uu][Pp][Dd][Aa][Tt][Ee])\s*)(\S+)/$1 . with_color 'blue', $2/ge;
   }
-  carp sprintf "time:%.2f\tsql:%s\tsql_binds:%s\trows:%d",
+  carp sprintf "runtime:%.2f\tsql:%s\tsql_binds:%s\trows:%d",
       $tv * 1000, $sql, _ltsv_escape $bind, $_[0]->rows if $WARN;
   return $return;
 }; # DBI::st::execute
@@ -140,7 +140,7 @@ my $orig_do = \&DBI::db::do;
       : '';
 
   $SQLCount++ if $COUNT;
-  carp sprintf "time:%.2f\tsql:%s\tsql_binds:%s\trows:%d",
+  carp sprintf "runtime:%.2f\tsql:%s\tsql_binds:%s\trows:%d",
       $tv * 1000, _ltsv_escape $_[1], _ltsv_escape $bind, $return if $WARN;
   return $return;
 }; # DBI::db::do
@@ -152,7 +152,7 @@ my $orig_begin_work = \&DBI::db::begin_work;
   my $return = $orig_begin_work->(@_);
 
   my $tv = Time::HiRes::tv_interval ($time);
-  carp sprintf "time:%.2f\toperation_class:DBI\toperation_method:begin_work",
+  carp sprintf "runtime:%.2f\toperation_class:DBI\toperation_method:begin_work",
       $tv * 1000 if $WARN;
   return $return;
 }; # DBI::db::begin_work
@@ -164,7 +164,7 @@ my $orig_commit = \&DBI::db::commit;
   my $return = $orig_commit->(@_);
 
   my $tv = Time::HiRes::tv_interval ($time);
-  carp sprintf "time:%.2f\toperation_class:DBI\toperation_method:commit",
+  carp sprintf "runtime:%.2f\toperation_class:DBI\toperation_method:commit",
       $tv * 1000 if $WARN;
   return $return;
 }; # DBI::db::commit
@@ -176,7 +176,7 @@ my $orig_rollback = \&DBI::db::rollback;
   my $return = $orig_rollback->(@_);
 
   my $tv = Time::HiRes::tv_interval ($time);
-  carp sprintf "time:%.2f\toperation_class:DBI\toperation_method:rollback",
+  carp sprintf "runtime:%.2f\toperation_class:DBI\toperation_method:rollback",
       $tv * 1000 if $WARN;
   return $return;
 }; # DBI::db::rollback
