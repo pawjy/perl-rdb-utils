@@ -160,6 +160,7 @@ while (my $op = shift @operation) {
 my $new_json = {
     pid => mysqld->pid,
     dsns => $dsns,
+    alt_dsns => {master => $dsns},
     dir_name => mysqld->base_dir,
 };
 
