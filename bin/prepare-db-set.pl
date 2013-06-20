@@ -133,7 +133,7 @@ while (my $op = shift @operation) {
         warn "CREATE DATABASE $op->{name}\n";
     } elsif ($op->{type} eq 'use database') {
         $last_dbh = $dbhs->{$op->{name}} || dsn2dbh $dsns->{$op->{name}};
-        $dbhs = {$op->name => $last_dbh};
+        $dbhs = {$op->{name} => $last_dbh};
         warn "USE $op->{name}\n";
     } elsif ($op->{type} eq 'create table') {
         die "Database is not created before CREATE TABLE" unless $last_dbh;
