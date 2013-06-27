@@ -4,7 +4,11 @@ use warnings;
 use AnyEvent;
 use AnyEvent::Worker;
 use JSON::Functions::XS qw(perl2json_bytes);
+use File::Path qw(rmtree);
 require DBIx::ShowSQL if $ENV{SQL_DEBUG};
+
+my $base_dirs = [];
+END { -d $_ and rmtree($_) for @$base_dirs; }
 
 sub new {
     return bless {db_set_index => 1}, $_[0];
@@ -21,6 +25,7 @@ sub worker {
             warn "$error at $file line $line";
         });
         $w->do('install_signal_handlers', sub { });
+        $w->do('get_base_dir', sub { push @$base_dirs, $_[1]; });
         $w;
     };
 }
@@ -146,6 +151,10 @@ sub get_dsn {
 
 sub get_pid {
     return $_[0]->mysqld->pid;
+}
+
+sub get_base_dir {
+    return $_[0]->mysqld->base_dir;
 }
 
 sub create_database {
