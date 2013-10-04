@@ -1,4 +1,5 @@
 AnyEvent::DBI
+AnyEvent::Worker
 Carp
 Cwd
 DBI

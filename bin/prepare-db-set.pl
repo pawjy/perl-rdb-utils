@@ -22,6 +22,7 @@ use Test::MySQL::CreateDatabase qw(
     mysqld test_dsn dsn2dbh copy_schema_from_file execute_inserts_from_file
     extract_schema_sql_from_file execute_alter_tables_from_file
 );
+use DBIx::Preparation::Parser;
 
 my $list_file_name;
 my $debug_log_file_name;
@@ -64,50 +65,11 @@ sub Path::Class::Entity::realpath {
     return $self;
 }
 
-my $ProcessedFileNames = {};
+my $Parser;
 sub process_preparation_file ($) {
     my $f = shift;
-    return if $ProcessedFileNames->{$f->stringify};
-    $ProcessedFileNames->{$f->stringify} = 1;
-
-    my $base = $f->dir;
-    for (($f->slurp)) {
-        s/#.*$//;
-        if (/^\s*db\s+(\S+)\s*$/) {
-            push @operation,
-                {type => 'create database', name => $1};
-        } elsif (/^\s*use\s+db\s+(\S+)\s*$/) {
-            push @operation,
-                {type => 'use database', name => $1};
-        } elsif (/^\s*table\s+(\S+)\s*$/) {
-            push @operation,
-                {type => 'create table', f => file($1)->absolute($base)->realpath};
-        } elsif (/^\s*dbtable\s+(\S+)\s*$/) {
-            push @operation,
-                {type => 'create db and table', f => file($1)->absolute($base)->realpath};
-        } elsif (/^\s*alter\s+table\s+(\S+)\s*$/) {
-            push @operation,
-                {type => 'alter table',
-                 f => file($1)->absolute($base)->realpath}
-        } elsif (/^\s*insert\s+(\S+)\s*$/) {
-            push @operation,
-                {type => 'insert', f => file($1)->absolute($base)->realpath}
-        } elsif (/^\s*import\s+glob\s+(\S+)\s*$/) {
-            for (glob file($1)->absolute($base)->stringify) {
-                process_preparation_file file($_)->realpath;
-            }
-        } elsif (/^\s*import\s+modules\s+(\S+)\s*$/) {
-            for (map { glob $_->file($1)->stringify } @modules_d) {
-                process_preparation_file file($_)->realpath;
-            }
-        } elsif (/^\s*import\s+(\S+)\s*$/) {
-            process_preparation_file file($1)->absolute($base)->realpath;
-        } elsif (/^\s*$/) {
-            #
-        } else {
-            die "Syntax error: |$_|\n";
-        }
-    }
+    $Parser ||= DBIx::Preparation::Parser->new;
+    push @operation, $Parser->parse_f($f, modules_d => \@modules_d);
 }
 
 my $debug_log_file;
@@ -171,23 +133,8 @@ while (my $op = shift @operation) {
         warn "CREATE DATABASE $op->{name}\n";
     } elsif ($op->{type} eq 'use database') {
         $last_dbh = $dbhs->{$op->{name}} || dsn2dbh $dsns->{$op->{name}};
-        $dbhs = {$op->name => $last_dbh};
+        $dbhs = {$op->{name} => $last_dbh};
         warn "USE $op->{name}\n";
-    } elsif ($op->{type} eq 'create db and table') {
-        my $subops = extract_schema_sql_from_file $op->{f};
-        warn "Load CREATEs from @{[$op->{f}->relative]}\n";
-        my @newop;
-        for (@$subops) {
-            if (/^CREATE DATABASE (?:IF NOT EXISTS )?(\S+)$/) {
-                push @newop, {type => 'create database', name => $1};
-                push @newop, {type => 'use database', name => $1};
-            } elsif (/^CREATE TABLE / or /^INSERT /) {
-                push @newop, {type => 'sql', value => $_};
-            } else {
-                die "Operation |$_| is not supported\n";
-            }
-        }
-        unshift @operation, @newop;
     } elsif ($op->{type} eq 'create table') {
         die "Database is not created before CREATE TABLE" unless $last_dbh;
         copy_schema_from_file $op->{f} => $last_dbh;
@@ -213,6 +160,7 @@ while (my $op = shift @operation) {
 my $new_json = {
     pid => mysqld->pid,
     dsns => $dsns,
+    alt_dsns => {master => $dsns},
     dir_name => mysqld->base_dir,
 };
 
@@ -255,7 +203,7 @@ Thanks to id:shiba_yu36.
 
 =head1 LICENSE
 
-Copyright 2011 Hatena <http://www.hatena.ne.jp/>.
+Copyright 2011-2012 Hatena <http://www.hatena.ne.jp/>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
