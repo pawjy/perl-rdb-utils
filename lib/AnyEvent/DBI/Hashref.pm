@@ -15,9 +15,24 @@ for my $cmd_name (qw(exec_as_hashref exec_or_fatal_as_hashref)) {
 }
 
 our $DBH;
+my $DBIArgs;
+
+sub req_open {
+   my (undef, $dbi, $user, $pass, %attr) = @{+shift};
+
+   $DBIArgs = [$dbi, $user, $pass, \%attr];
+   $DBH = DBI->connect ($dbi, $user, $pass, \%attr) or die $DBI::errstr;
+
+   [1, 1]
+}
 
 sub req_exec_as_hashref {
-  my (undef, $st, @args) = @{+shift};
+   my (undef, $st, @args) = @{+shift};
+
+   unless ($DBH->ping) {
+       $DBH = DBI->connect (@$DBIArgs) or die $DBI::errstr;
+   }
+
    my $sth = $DBH->prepare_cached ($st, undef, 1)
        or die [$DBI::errstr];
 
@@ -28,7 +43,12 @@ sub req_exec_as_hashref {
 }
 
 sub req_exec_or_fatal_as_hashref {
-  my (undef, $st, @args) = @{+shift};
+   my (undef, $st, @args) = @{+shift};
+
+   unless ($DBH->ping) {
+       $DBH = DBI->connect (@$DBIArgs) or die $DBI::errstr;
+   }
+
    my $sth = $DBH->prepare_cached ($st, undef, 1)
        or do { my $str = $DBI::errstr; $DBH->disconnect; die [$str, 1] };
 
