@@ -1,5 +1,3 @@
-AnyEvent::DBI
-AnyEvent::Worker
 Carp
 Cwd
 DBI
@@ -12,5 +10,3 @@ Test::Class
 Test::More
 Test::mysqld
 Time::HiRes
-
-Event

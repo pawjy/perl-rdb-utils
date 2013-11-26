@@ -1,3 +1,5 @@
+AnyEvent
+AnyEvent::Worker
 DBI
 Path::Class
 Test::More
