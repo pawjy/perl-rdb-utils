@@ -2,4 +2,5 @@ AnyEvent
 AnyEvent::Worker
 DBI
 Path::Class
+Path::Tiny
 Test::More
