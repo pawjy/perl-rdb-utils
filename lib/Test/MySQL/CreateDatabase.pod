@@ -69,6 +69,11 @@ the DBI's "dbh" object with which the statements are executed.
 
 =back
 
+The C<@Test::MySQL::CreateDatabase::MY_CNF_ARGS> global variable can
+be used to specify additional arguments to C<my_cnf> option of the
+L<Test::mysqld> (i.e. configurations specified in C<my.cnf>).  Note
+that this must be specified before the C<mysqld> is invoked.
+
 =head1 SEE ALSO
 
 L<Test::mysqld>.
@@ -77,12 +82,8 @@ dsns.json <https://github.com/wakaba/perl-rdb-utils/wiki/dsns.json>.
 
 =head1 AVAILABILITY
 
-The latest version of the module is available from:
-<https://github.com/wakaba/perl-rdb-utils> or
-<http://suika.fam.cx/gate/git/wi/perl/rdb-utils.git/tree>.
-
-An outdated snapshot copy of the module might be available from
-<http://wakaba.github.com/packages/#perl-test-mysql-createdatabase>.
+The latest version of the module is available from
+<https://github.com/wakaba/perl-rdb-utils>.
 
 =head1 HISTORY
 
@@ -101,11 +102,13 @@ and then maintained as part of the Test-Hatena project.
 
 =head1 AUTHOR
 
-Wakaba (id:wakabatan) <wakabatan@hatena.ne.jp>.
+Wakaba <wakaba@suikawiki.org>.
 
 =head1 LICENSE
 
 Copyright 2010-2011 Hatena <http://www.hatena.ne.jp/>.
+
+Copyright 2014 Wakaba <wakaba@suikawiki.org>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

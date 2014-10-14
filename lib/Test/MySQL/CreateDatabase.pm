@@ -1,13 +1,15 @@
 package Test::MySQL::CreateDatabase;
 use strict;
 use warnings;
-our $VERSION = '1.0';
+our $VERSION = '2.0';
 use Test::mysqld;
 use Test::More;
 use DBI;
 use Exporter::Lite;
 
 our @EXPORT_OK;
+
+our @MY_CNF_ARGS;
 
 our $DEBUG;
 
@@ -26,6 +28,7 @@ sub mysqld () {
                 'skip-networking' => '',
                 'innodb_lock_wait_timeout' => 2,
                 'max_connections' => $max,
+                @MY_CNF_ARGS,
             },
         );
     } or BAIL_OUT($Test::mysqld::errstr || $@);
@@ -140,3 +143,14 @@ sub execute_alter_tables_from_file ($$) {
 }
 
 1;
+
+=head1 LICENSE
+
+Copyright 2010-2011 Hatena <http://www.hatena.ne.jp/>.
+
+Copyright 2014 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut

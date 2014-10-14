@@ -1,0 +1,50 @@
+perl-rdb-utils
+~~~~~~~~~~~~~~
+
+DBIx::ShowSQL
+  lib/DBIx/ShowSQL.pm
+  lib/DBIx/ShowSQL.pod
+
+  Print SQL statements executed through |DBI| module to standard error
+  output for debugging.
+
+bin/prepare-db-sets.pl
+DBIx::Preparation::Parser
+  lib/DBIx/Preparation/Parser.pm
+  lib/DBIx/Preparation/Parser.pod
+
+  Prepare a set of MySQL databases with initial tables and rows for
+  testing and debugging using SQL source files and "preparation.txt"
+  instructions.
+
+Test::MySQL::CreateDatabase
+  lib/Test/MySQL/CreateDatabase.pm
+  lib/Test/MySQL/CreateDatabase.pod
+
+  Prepare a set of MySQL databases using SQL source files and
+  "preparation.txt" instructions from test scripts.
+
+Test::AnyEvent::MySQL::CreateDatabase
+  lib/Test/AnyEvent/MySQL/CreateDatabase.pm
+  lib/Test/AnyEvent/MySQL/CreateDatabase.pod
+
+  An |AnyEvent|-aware wrapper of |Test::MySQL::CreateDatabase|.
+
+Test::AnyEvent::MySQL::Server
+  lib/Test/AnyEvent/MySQL/Server.pm
+
+  An |AnyEvent|-aware wrapper of |Test::mysqld|, i.e. running a local
+  MySQL server from test scripts.
+
+bin/generate-certs-for-tests.pl
+
+  Generate a set of certification files using |openssl| command for
+  testing.
+
+AnyEvent::DBI::Carp
+  lib/AnyEvent/DBI/Carp.pm
+AnyEvent::DBI::Hashref
+  lib/AnyEvent/DBI/Hashref.pm
+
+  (DEPRECATED) Monkeypatches for |AnyEvent::DBI| module for
+  integration with Dongry.
