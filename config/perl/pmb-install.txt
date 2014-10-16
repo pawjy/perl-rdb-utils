@@ -49,7 +49,7 @@ Test::NoWarnings~1.04
 Class::Accessor::Fast~0.34
 List::Util~1.41
 DateTime::Locale~0.45
-Test::Builder~1.001006
+Test::Builder~1.001008
 AnyEvent::Util
 Module::Implementation~0.09
 Test::SharedFork~0.29
@@ -63,14 +63,14 @@ Exporter::Lite~0.06
 Data::Dumper~2.154
 Dist::CheckConflicts~0.11
 Sub::Name~0.12
-Test::More~1.001006
+Test::More~1.001008
 Text::Diff~1.41
 CPAN::Meta::Requirements~2.128
 File::Temp~0.2304
 Scalar::Util~1.41
 Module::Metadata~1.000024
 File::Spec~3.47
-Test::Simple~1.001006
+Test::Simple~1.001008
 Class::Data::Inheritable~0.08
 MRO::Compat~0.12
 File::Slurp~9999.19
