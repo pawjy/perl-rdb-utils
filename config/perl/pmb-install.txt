@@ -1,6 +1,6 @@
 Capture::Tiny~0.25
 JSON::XS~3.01
-Encode~2.62
+Encode~2.63
 CPAN::Meta~2.142690
 Module::Build~0.4210
 Test::Deep~0.113
@@ -17,7 +17,7 @@ Sub::Exporter::Progressive~0.001011
 ExtUtils::Config~0.008
 Path::Class~0.35
 common::sense~3.73
-Variable::Magic~0.54
+Variable::Magic~0.55
 List::Rubyish~0.03
 Test::mysqld~0.17
 Types::Serialiser~1.0
