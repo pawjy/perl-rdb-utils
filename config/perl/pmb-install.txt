@@ -77,7 +77,7 @@ File::Slurp~9999.19
 ExtUtils::Helpers~0.022
 Class::Load~0.22
 Time::HiRes~1.9726
-DateTime::TimeZone~1.75
+DateTime::TimeZone~1.76
 JSON::PP~2.27300
 namespace::clean~0.25
 AnyEvent::DBI~2.3
