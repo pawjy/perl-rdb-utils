@@ -84,7 +84,15 @@ sub prep_f_to_cv {
         onstdout => $self->onstdout,
         onstderr => $self->onstderr,
     }, 'Test::AnyEvent::MySQL::CreateDatabase::Object';
-    $db_start_cv->cb(sub { $db_cv->send($hoge); });
+    $db_start_cv->cb(sub {
+        my $code = $_[0]->recv;
+        if ($code != 0) {
+            $db_cv->croak("$prepare_pl_script exited with $code");
+        } else {
+            $db_cv->send($hoge);
+        }
+    });
+ 
     return $db_cv;
 }
 
