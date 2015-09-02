@@ -42,6 +42,10 @@ C<bin/prepare-db-set.pl>, L<Test::X1>.
 
 Wakaba <wakabatan@hatena.ne.jp>.
 
+=head1 ACKNOWLEDEMENTS
+
+Thanks to motemen.
+
 =head1 LICENSE
 
 Copyright 2012 Hatena <http://www.hatena.ne.jp>.
