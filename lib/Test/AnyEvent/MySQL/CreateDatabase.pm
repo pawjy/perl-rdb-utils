@@ -24,7 +24,7 @@ sub perl {
     }
     return $_[0]->{perl} ||= do {
         my $perl = file(__FILE__)->dir->parent->parent->parent->parent->file('perl');
-        -f $perl ? $perl->stringify : 'perl';
+        -f $perl ? $perl->stringify : $^X;
     };
 }
 
