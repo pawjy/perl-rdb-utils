@@ -33,6 +33,7 @@ sub _exec_syntax_error : Test(1) {
 
   $cv->recv;
 
+  local $TODO = 1;
   is_deeply \@arg, [__FILE__, __LINE__ - 4];
 } # _exec_syntax_error
 
