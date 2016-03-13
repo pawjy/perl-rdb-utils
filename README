@@ -1,6 +1,16 @@
 perl-rdb-utils
 ~~~~~~~~~~~~~~
 
+This repository contains DEPRECATED Perl modules related to relational
+database (MySQL in particular) operations through the |DBI| Perl
+module.
+
+Use of these modules are DEPRECATED as the |DBI|'s blocking I/O APIs
+are incompatible with recent non-blocking ecosystem built upon the
+|AnyEvent| module.
+
+* Modules
+
 DBIx::ShowSQL
   lib/DBIx/ShowSQL.pm
   lib/DBIx/ShowSQL.pod
