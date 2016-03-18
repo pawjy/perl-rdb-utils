@@ -37,7 +37,7 @@ DateTime~1.25
 Test::NoWarnings~1.04
 Class::Accessor::Fast~0.34
 DateTime::Locale~1.02
-List::Util~1.43
+List::Util~1.44
 AnyEvent::Util
 Test::Builder~1.001014
 Module::Implementation~0.09
@@ -57,7 +57,7 @@ CPAN::Meta::Requirements~2.140
 File::Temp~0.2304
 File::Copy::Recursive~0.38
 Module::Metadata~1.000027
-Scalar::Util~1.43
+Scalar::Util~1.44
 Class::Data::Inheritable~0.08
 MRO::Compat~0.12
 File::Slurp~9999.19
