@@ -1,6 +1,6 @@
 Capture::Tiny~0.36
 JSON::XS~3.02
-Encode~2.82
+Encode~2.83
 CPAN::Meta~2.150005
 Module::Build~0.4216
 List::MoreUtils~0.413
@@ -64,7 +64,7 @@ File::Slurp~9999.19
 Time::HiRes~1.9732
 TAP::Harness~3.36
 JSON::PP~2.27300
-DateTime::TimeZone~1.96
+DateTime::TimeZone~1.97
 AnyEvent::DBI~2.3
 Cwd~3.62
 AnyEvent::Worker~0.06
