@@ -31,13 +31,13 @@ CPAN::Meta::YAML~0.018
 Class::Accessor::Lite~0.08
 Carp~1.38
 Class::Singleton~1.5
-Params::Validate~1.22
+Params::Validate~1.23
 Exporter::Tiny~0.042
 DateTime~1.26
 Test::NoWarnings~1.04
 Class::Accessor::Fast~0.34
-List::Util~1.44
-DateTime::Locale~1.02
+List::Util~1.45
+DateTime::Locale~1.03
 Test::Builder~1.001014
 AnyEvent::Util
 Module::Implementation~0.09
@@ -56,7 +56,7 @@ Test::More~1.001014
 CPAN::Meta::Requirements~2.140
 File::Temp~0.2304
 File::Copy::Recursive~0.38
-Scalar::Util~1.44
+Scalar::Util~1.45
 Module::Metadata~1.000027
 Class::Data::Inheritable~0.08
 MRO::Compat~0.12
