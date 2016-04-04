@@ -22,7 +22,7 @@ Perl::OSType~1.009
 DBIx::RewriteDSN~0.05
 Algorithm::Diff~1.1903
 ExtUtils::CBuilder~0.280224
-Path::Tiny~0.084
+Path::Tiny~0.086
 Parse::CPAN::Meta~1.4417
 lib::abs~0.93
 version~0.9916
