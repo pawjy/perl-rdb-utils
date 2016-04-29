@@ -2,11 +2,11 @@ Capture::Tiny~0.36
 JSON::XS~3.02
 Encode~2.84
 CPAN::Meta~2.150005
-Module::Build~0.4216
+Module::Build~0.4218
 List::MoreUtils~0.413
 Test::Deep~1.120
-DBI~1.634
-ExtUtils::MakeMaker~7.12
+DBI~1.636
+ExtUtils::MakeMaker~7.14
 ExtUtils::ParseXS~3.30
 Canary::Stability~2011
 Test::Differences~0.64
@@ -61,9 +61,9 @@ Module::Metadata~1.000027
 Class::Data::Inheritable~0.08
 MRO::Compat~0.12
 File::Slurp~9999.19
-Time::HiRes~1.9732
+Time::HiRes~1.9733
 TAP::Harness~3.36
-JSON::PP~2.27300
+JSON::PP~2.27400
 DateTime::TimeZone~1.98
 AnyEvent::DBI~2.3
 Cwd~3.62
