@@ -3,7 +3,7 @@ JSON::XS~3.02
 Encode~2.84
 CPAN::Meta~2.150005
 Module::Build~0.4218
-List::MoreUtils~0.413
+List::MoreUtils~0.415
 Test::Deep~1.120
 DBI~1.636
 ExtUtils::MakeMaker~7.14
@@ -22,7 +22,7 @@ Perl::OSType~1.009
 DBIx::RewriteDSN~0.05
 Algorithm::Diff~1.1903
 ExtUtils::CBuilder~0.280224
-Path::Tiny~0.088
+Path::Tiny~0.090
 Parse::CPAN::Meta~1.4417
 lib::abs~0.93
 version~0.9916
