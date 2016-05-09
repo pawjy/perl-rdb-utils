@@ -6,7 +6,7 @@ Module::Build~0.4218
 List::MoreUtils~0.415
 Test::Deep~1.120
 DBI~1.636
-ExtUtils::MakeMaker~7.14
+ExtUtils::MakeMaker~7.16
 ExtUtils::ParseXS~3.30
 Canary::Stability~2011
 Test::Differences~0.64
@@ -31,7 +31,7 @@ CPAN::Meta::YAML~0.018
 Class::Accessor::Lite~0.08
 Carp~1.38
 Class::Singleton~1.5
-Params::Validate~1.23
+Params::Validate~1.24
 Exporter::Tiny~0.042
 DateTime~1.26
 Test::NoWarnings~1.04
