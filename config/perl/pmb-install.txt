@@ -33,7 +33,7 @@ Carp~1.38
 Class::Singleton~1.5
 Params::Validate~1.24
 Exporter::Tiny~0.042
-DateTime~1.26
+DateTime~1.27
 Test::NoWarnings~1.04
 Class::Accessor::Fast~0.34
 List::Util~1.45
