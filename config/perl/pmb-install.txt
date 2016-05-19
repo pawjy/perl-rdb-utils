@@ -26,7 +26,7 @@ Path::Tiny~0.090
 Parse::CPAN::Meta~1.4417
 lib::abs~0.93
 version~0.9916
-Test::Tester~1.302015
+Test::Tester~1.302019
 CPAN::Meta::YAML~0.018
 Class::Accessor::Lite~0.08
 Carp~1.38
@@ -38,7 +38,7 @@ Test::NoWarnings~1.04
 Class::Accessor::Fast~0.34
 List::Util~1.45
 DateTime::Locale~1.03
-Test::Builder~1.302015
+Test::Builder~1.302019
 AnyEvent::Util
 Module::Implementation~0.09
 Test::SharedFork~0.35
@@ -52,7 +52,7 @@ Test::Class~0.50
 Data::Dumper~2.154
 Dist::CheckConflicts~0.11
 Text::Diff~1.44
-Test::More~1.302015
+Test::More~1.302019
 CPAN::Meta::Requirements~2.140
 File::Temp~0.2304
 File::Copy::Recursive~0.38
