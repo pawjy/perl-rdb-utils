@@ -1,4 +1,4 @@
-Capture::Tiny~0.40
+Capture::Tiny~0.42
 JSON::XS~3.02
 Encode~2.84
 CPAN::Meta~2.150005
