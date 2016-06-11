@@ -42,7 +42,7 @@ Test::Builder~1.302026
 AnyEvent::Util
 Module::Implementation~0.09
 Test::SharedFork~0.35
-Getopt::Long~2.48
+Getopt::Long~2.49
 Try::Tiny~0.24
 Term::ANSIColor~4.05
 parent~0.234
