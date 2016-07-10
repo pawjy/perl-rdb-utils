@@ -9,7 +9,7 @@ ExtUtils::MakeMaker~7.18
 ExtUtils::ParseXS~3.30
 Canary::Stability~2011
 Test::Differences~0.64
-DBD::mysql~4.034
+DBD::mysql~4.035
 Path::Class~0.36
 common::sense~3.74
 List::Rubyish~0.03
@@ -26,7 +26,7 @@ ExtUtils::CBuilder~0.280224
 Parse::CPAN::Meta~1.4422
 lib::abs~0.93
 version~0.9917
-Test::Tester~1.302037
+Test::Tester~1.302040
 CPAN::Meta::YAML~0.018
 Class::Accessor::Lite~0.08
 Carp~1.38
@@ -39,7 +39,7 @@ Class::Accessor::Fast~0.34
 DateTime::Locale~1.05
 List::Util~1.45
 AnyEvent::Util
-Test::Builder~1.302037
+Test::Builder~1.302040
 Module::Implementation~0.09
 Test::SharedFork~0.35
 Try::Tiny~0.24
@@ -51,7 +51,7 @@ Exporter::Lite~0.08
 Test::Class~0.50
 Data::Dumper~2.160
 Text::Diff~1.44
-Test::More~1.302037
+Test::More~1.302040
 CPAN::Meta::Requirements~2.140
 File::Temp~0.2304
 File::Copy::Recursive~0.38
