@@ -26,7 +26,7 @@ Path::Tiny~0.096
 Parse::CPAN::Meta~1.4422
 lib::abs~0.93
 version~0.9917
-Test::Tester~1.302045
+Test::Tester~1.302047
 CPAN::Meta::YAML~0.018
 Class::Accessor::Lite~0.08
 Carp~1.38
@@ -39,7 +39,7 @@ Test::NoWarnings~1.04
 DateTime::Locale~1.05
 List::Util~1.45
 AnyEvent::Util
-Test::Builder~1.302045
+Test::Builder~1.302047
 Module::Implementation~0.09
 Test::SharedFork~0.35
 Getopt::Long~2.49
