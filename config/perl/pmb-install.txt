@@ -55,7 +55,7 @@ CPAN::Meta::Requirements~2.140
 File::Temp~0.2304
 File::Copy::Recursive~0.38
 Scalar::Util~1.45
-Module::Metadata~1.000027
+Module::Metadata~1.000033
 Class::Data::Inheritable~0.08
 MRO::Compat~0.12
 File::Slurp~9999.19
