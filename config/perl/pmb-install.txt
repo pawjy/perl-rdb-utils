@@ -39,7 +39,7 @@ List::MoreUtils~0.416
 List::Rubyish~0.03
 List::Util~1.45
 MRO::Compat~0.12
-Module::Build~0.4218
+Module::Build~0.4220
 Module::Implementation~0.09
 Module::Metadata~1.000033
 Module::Runtime~0.014
