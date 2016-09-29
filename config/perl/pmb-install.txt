@@ -21,7 +21,7 @@ DBIx::RewriteDSN~0.05
 Data::Dumper~2.161
 DateTime~1.39
 DateTime::Locale~1.08
-DateTime::TimeZone~2.04
+DateTime::TimeZone~2.05
 Devel::StackTrace~2.01
 Encode~2.86
 Eval::Closure~0.14
