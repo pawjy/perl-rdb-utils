@@ -54,10 +54,10 @@ Path::Tiny~0.096
 Perl::OSType~1.010
 Role::Tiny~2.000003
 Scalar::Util~1.46
-Specio::Library::String~0.26
+Specio::Library::String~0.27
 Sub::Exporter::Progressive~0.001012
 Sub::Identify~0.12
-Sub::Name~0.19
+Sub::Name~0.21
 TAP::Harness~3.36
 Term::ANSIColor~4.05
 Test::Class~0.50
