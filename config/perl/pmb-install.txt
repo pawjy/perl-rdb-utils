@@ -41,7 +41,7 @@ Package::Stash::XS~0.28
 Params::ValidationCompiler~0.19
 Path::Class~0.37
 Path::Tiny~0.098
-Role::Tiny::With~2.000005
+Role::Tiny~2.000005
 Scalar::Util~1.46
 Specio::Declare~0.31
 Sub::Exporter::Progressive~0.001013
@@ -52,7 +52,7 @@ Test::Differences~0.64
 Test::Fatal~0.014
 Test::NoWarnings~1.04
 Test::SharedFork~0.35
-Test::Tester~1.302062
+Test::Tester~1.302067
 Test::mysqld~0.17
 Text::Diff~1.44
 Time::HiRes~1.9741
