@@ -38,11 +38,12 @@ Module::Implementation~0.09
 Module::Runtime~0.014
 Package::Stash~0.37
 Package::Stash::XS~0.28
-Params::ValidationCompiler~0.19
+Params::ValidationCompiler~0.21
 Path::Class~0.37
 Path::Tiny~0.098
 Role::Tiny~2.000005
-Specio::Library::Builtins~0.31
+Scalar::Util~1.46
+Specio::Library::String~0.31
 Sub::Exporter::Progressive~0.001013
 Sub::Identify~0.12
 Term::ANSIColor~4.06
