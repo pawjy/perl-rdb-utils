@@ -27,7 +27,7 @@ Exporter::Tiny~0.042
 File::Copy::Recursive~0.38
 File::Slurp~9999.19
 File::Temp~0.2304
-Filter::Util::Call~1.55
+Filter::Util::Call~1.56
 Getopt::Long~2.49
 JSON::XS~3.03
 List::MoreUtils~0.416
@@ -42,7 +42,7 @@ Params::ValidationCompiler~0.22
 Path::Class~0.37
 Path::Tiny~0.100
 Role::Tiny~2.000005
-Specio::Exporter~0.32
+Specio::Library::String~0.32
 Sub::Exporter::Progressive~0.001013
 Sub::Identify~0.12
 Term::ANSIColor~4.06
