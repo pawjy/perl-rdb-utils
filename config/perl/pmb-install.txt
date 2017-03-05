@@ -16,7 +16,7 @@ DBI~1.636
 DBIx::RewriteDSN~0.05
 Data::Dumper~2.161
 DateTime~1.42
-DateTime::Locale~1.12
+DateTime::Locale~1.14
 DateTime::TimeZone~2.10
 Devel::StackTrace~2.02
 Encode~2.88
@@ -43,14 +43,13 @@ Path::Class~0.37
 Path::Tiny~0.104
 Role::Tiny~2.000005
 Scalar::Util~1.47
-Specio::Library::String~0.36
+Specio::Library::Builtins~0.36
 Sub::Exporter::Progressive~0.001013
 Sub::Identify~0.12
 Term::ANSIColor~4.06
 Test::Class~0.50
 Test::Differences~0.64
 Test::Fatal~0.014
-Test::More~1.302078
 Test::NoWarnings~1.04
 Test::SharedFork~0.35
 Test::Tester~1.302078
