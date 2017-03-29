@@ -1,7 +1,6 @@
 Algorithm::Diff~1.1903
 AnyEvent~7.13
 AnyEvent::DBI~2.3
-AnyEvent::Util
 AnyEvent::Worker~0.06
 B::Hooks::EndOfScope~0.21
 Canary::Stability~2012
@@ -39,10 +38,10 @@ Filter::Util::Call~1.57
 Getopt::Long~2.49
 IO::CaptureOutput~1.1104
 JSON::XS~3.03
-List::MoreUtils~0.416
+List::MoreUtils~0.418
 List::Rubyish~0.03
 List::Util~1.47
-MRO::Compat~0.12
+MRO::Compat~0.13
 Module::Build::Tiny~0.039
 Module::Implementation~0.09
 Module::Runtime~0.014
@@ -51,9 +50,9 @@ Package::Stash::XS~0.28
 Params::ValidationCompiler~0.23
 Path::Class~0.37
 Path::Tiny~0.104
-Role::Tiny::With~2.000005
+Role::Tiny~2.000005
 Scalar::Util~1.47
-Specio~0.36
+Specio::Declare~0.36
 Sub::Exporter::Progressive~0.001013
 Sub::Identify~0.12
 TAP::Harness::Env~3.38
@@ -61,7 +60,6 @@ Term::ANSIColor~4.06
 Test::Class~0.50
 Test::Differences~0.64
 Test::Fatal~0.014
-Test::More~1.302078
 Test::NoWarnings~1.04
 Test::SharedFork~0.35
 Test::Tester~1.302078
@@ -71,7 +69,6 @@ Time::HiRes~1.9741
 Try::Tiny~0.28
 Types::Serialiser~1.0
 Variable::Magic~0.61
-XSLoader~0.24
 common::sense~3.74
 lib::abs~0.93
 namespace::autoclean~0.28
