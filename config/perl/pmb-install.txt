@@ -19,13 +19,13 @@ Data::Dumper~2.161
 DateTime~1.42
 DateTime::Locale~1.16
 DateTime::TimeZone~2.11
-Devel::CheckLib~1.10
+Devel::CheckLib~1.11
 Devel::StackTrace~2.02
 Encode~2.89
 Eval::Closure~0.14
 Exception::Class~1.42
 Exporter::Lite~0.08
-Exporter::Tiny~0.044
+Exporter::Tiny~1.000000
 ExtUtils::Config~0.008
 ExtUtils::Helpers~0.026
 ExtUtils::InstallPaths~0.011
@@ -52,7 +52,8 @@ Params::ValidationCompiler~0.24
 Path::Class~0.37
 Path::Tiny~0.104
 Role::Tiny~2.000005
-Specio::Exporter~0.37
+Scalar::Util~1.47
+Specio~0.37
 Sub::Exporter::Progressive~0.001013
 Sub::Identify~0.14
 TAP::Harness::Env~3.39
