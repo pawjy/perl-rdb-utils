@@ -16,7 +16,7 @@ DBD::mysql~4.042
 DBI~1.636
 DBIx::RewriteDSN~0.05
 Data::Dumper~2.161
-DateTime~1.42
+DateTime~1.43
 DateTime::Locale~1.16
 DateTime::TimeZone~2.11
 Devel::CheckLib~1.11
@@ -35,7 +35,7 @@ File::ShareDir::Install~0.11
 File::Slurp~9999.19
 File::Temp~0.2304
 Filter::Util::Call~1.57
-Getopt::Long~2.49
+Getopt::Long~2.5
 IO::CaptureOutput~1.1104
 JSON::XS~3.03
 List::MoreUtils~0.419
@@ -51,16 +51,16 @@ Package::Stash::XS~0.28
 Params::ValidationCompiler~0.24
 Path::Class~0.37
 Path::Tiny~0.104
-Role::Tiny~2.000005
-Specio::Library::Numeric~0.37
+Role::Tiny::With~2.000005
+Specio::Exporter~0.37
 Sub::Exporter::Progressive~0.001013
 Sub::Identify~0.14
 TAP::Harness::Env~3.39
 Term::ANSIColor~4.06
+Test::Builder~1.302085
 Test::Class~0.50
 Test::Differences~0.64
 Test::Fatal~0.014
-Test::More~1.302085
 Test::NoWarnings~1.04
 Test::SharedFork~0.35
 Test::Tester~1.302085
