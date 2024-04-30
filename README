@@ -58,3 +58,25 @@ AnyEvent::DBI::Hashref
 
   (DEPRECATED) Monkeypatches for |AnyEvent::DBI| module for
   integration with Dongry.
+
+* Author
+
+Wakaba <wakaba@suikawiki.org>.
+
+* History
+
+This Git repository was at <https://github.com/wakaba/perl-rdb-utils>
+until R6.4.30 (30 April 2024), then transferred to
+<https://github.com/pawjy/perl-rdb-utils>.
+
+* License
+
+See the terms in the relevant files or in the documentations for the
+modules.
+
+For the files not covered by them:
+
+Copyright 2024 Wakaba <wakaba@suikawiki.org>.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
