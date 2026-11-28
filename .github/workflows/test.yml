@@ -11,7 +11,7 @@
                "uses" : "actions/checkout@v2",
                "with" : {
                   "fetch-depth" : 0,
-                  "ref" : "master",
+                  "ref" : "nightly",
                   "ssh-key" : "${{ secrets.GH_GIT_KEY }}"
                }
             },
@@ -52,7 +52,7 @@
                "uses" : "actions/checkout@v2",
                "with" : {
                   "fetch-depth" : 0,
-                  "ref" : "master",
+                  "ref" : "staging",
                   "ssh-key" : "${{ secrets.GH_GIT_KEY }}"
                }
             },
@@ -107,7 +107,7 @@
             },
             {
                "if" : "${{ always () }}",
-               "uses" : "actions/upload-artifact@v3",
+               "uses" : "actions/upload-artifact@v4",
                "with" : {
                   "path" : "/tmp/circle-artifacts/test"
                }
